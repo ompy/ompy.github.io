@@ -33,6 +33,43 @@
     .small{font-size:14px; color:var(--muted)}
     ol{margin:8px 0 0 20px; padding:0}
     footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px}
+.hero-flex{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+}
+
+.hero-text{
+  max-width:680px;
+}
+
+.hero-photo{
+  width:130px;
+  height:150px;
+  object-fit:cover;
+  border-radius:12px;
+  border:1px solid var(--line);
+  margin-top:4px;
+}
+
+/* --- Overview: smaller/lighter --- */
+.overview-card{
+  padding:12px 14px;
+}
+.overview-card p{
+  font-size:15px;
+  color:var(--muted);
+  margin-bottom:0;
+}
+
+/* Mobile: stack neatly */
+@media (max-width: 768px){
+  .hero-flex{
+    flex-direction:column;
+    gap:12px;
+  }
+}
+
     @media (min-width: 900px){ .grid{grid-template-columns: 1.2fr 0.8fr} }
   </style>
 </head>
@@ -51,27 +88,26 @@
   </div>
 </header>
 
-  <div class="wrap hero" style="display:flex; gap:6px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
-
-  <div>
+ <div class="wrap hero hero-flex">
+  <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
     <p class="subtitle">Assistant Professor, Department of Mathematics &amp; Scientific Computing</p>
     <p class="meta">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
   </div>
 
-  <img src="profile.jpeg"
-       alt="Dr. Om Prakash Yadav"
-       style="width:150px; height:160px; object-fit:cover;
-              border-radius:12px; border:1px solid #e5e7eb;">
+  <img class="hero-photo"
+       src="profile.jpeg"
+       alt="Dr. Om Prakash Yadav">
 </div>
+
 
 
 <main class="wrap">
 
   <div class="grid">
-    <div class="card">
-      <h2>Overview</h2>
+   <div class="card overview-card">
+  <h2>Overview</h2>
       <p>
         Finite element analysis of partial differential equations, numerical analysis, and finite difference methods.
       </p>

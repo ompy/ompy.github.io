@@ -1,13 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dr. Om Prakash Yadav</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dr. Om Prakash Yadav - Academic profile: research, teaching, publications, administration, and contact." />
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#4b5563; --line:#e5e7eb; --card:#f9fafb; --link:#1d4ed8;
+      --max: 980px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); line-height:1.65}
+    a{color:var(--link); text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
+    header{border-bottom:1px solid var(--line); position:sticky; top:0; background:rgba(255,255,255,.95); backdrop-filter:saturate(180%) blur(8px); z-index:10}
+    nav{display:flex; gap:10px; flex-wrap:wrap; padding:12px 0}
+    nav a{font-size:14px; color:var(--muted); padding:6px 8px; border-radius:8px}
+    nav a:hover{background:var(--card); color:var(--text); text-decoration:none}
+    .hero{padding:26px 0 8px}
+    .name{font-size:30px; margin:0}
+    .subtitle{margin:6px 0 0; color:var(--muted)}
+    .meta{margin:10px 0 0; color:var(--muted); font-size:14px}
+    main{padding:18px 0 46px}
+    section{padding:18px 0; border-top:1px solid var(--line)}
+    h2{font-size:18px; margin:0 0 10px}
+    ul{margin:8px 0 0 18px; padding:0}
+    li{margin:6px 0}
+    .grid{display:grid; grid-template-columns:1fr; gap:14px}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px}
+    .small{font-size:14px; color:var(--muted)}
+    ol{margin:8px 0 0 20px; padding:0}
+    footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px}
+    @media (min-width: 900px){ .grid{grid-template-columns: 1.2fr 0.8fr} }
+  </style>
 </head>
 <body>
-  <h1>Dr. Om Prakash Yadav</h1>
-  <p>Assistant Professor</p>
-  <p>Mathematics & Scientific Computing</p>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#academic">Academic</a>
+      <a href="#teaching">Teaching</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#administration">Administration</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <h1 class="name">Dr. Om Prakash Yadav</h1>
+  <p class="subtitle">Assistant Professor, Department of Mathematics &amp; Scientific Computing</p>
+  <p class="meta">National Institute of Technology Hamirpur (H.P.)</p>
+  <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
+</div>
+
+<main class="wrap">
+
+  <div class="grid">
+    <div class="card">
+      <h2>Overview</h2>
+      <p>
+        Finite element analysis of partial differential equations, numerical analysis, and finite difference methods.
+      </p>
+      <p class="small">
+        (You can add a longer bio here later.)
+      </p>
+    </div>
+    <div class="card">
+      <h2>Quick Links</h2>
+      <ul>
+        <li><a href="https://sites.google.com/nith.ac.in/opyadav" target="_blank" rel="noopener">NITH Google Site</a></li>
+        <li><a href="#" target="_blank" rel="noopener">Google Scholar (add link)</a></li>
+        <li><a href="#" target="_blank" rel="noopener">ORCID (add link)</a></li>
+        <li><a href="#" target="_blank" rel="noopener">CV (PDF) (add link)</a></li>
+      </ul>
+      <p class="small">Replace the “add link” items when ready.</p>
+    </div>
+  </div>
+
+  <section id="academic">
+    <h2>Academic</h2>
+    <ul>
+      <li>B.Sc. from University of Allahabad (2009).</li>
+      <li>M.Sc. from IIT Kanpur (2011).</li>
+      <li>Ph.D. from IIT Roorkee (2019).</li>
+    </ul>
+  </section>
+
+  <section id="teaching">
+    <h2>Teaching</h2>
+    <p><b>Courses Taught</b></p>
+    <ul>
+      <li>MA-211: Discrete Mathematics</li>
+      <li>MA-322: Advanced Differential Equations</li>
+      <li>MA-203: Numerical Methods</li>
+      <li>MA-724: Applied Linear Algebra</li>
+      <li>MA-814: Research Methodology</li>
+      <li>MA-815: Research and Publication Ethics</li>
+      <li>MA-611: Real Analysis</li>
+      <li>MA-321: Real and Complex Analysis</li>
+      <li>MA-741: Numerical Methods of Differential Equations</li>
+      <li>MA-212: Discrete Mathematics</li>
+      <li>MA-242: Mathematical Modeling and Simulation (B.Tech. 2nd Year)</li>
+    </ul>
+
+    <p><b>Ongoing Teaching</b></p>
+    <ul>
+      <li>MA-611: Real Analysis</li>
+      <li>MA-211: Numerical Methods &amp; Computation</li>
+    </ul>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+
+    <p><b>Area of Interest</b></p>
+    <ul>
+      <li>Finite element analysis of partial differential equations</li>
+      <li>Numerical Analysis</li>
+      <li>Finite difference methods</li>
+    </ul>
+
+    <p><b>Ph.D. Supervision</b></p>
+    <ul>
+      <li>Ms. Sanjalee (2K19-PhD-Math-493), Co-supervisor — Awarded. Title: Problems on onset of convection and heat transfer in the Suspension of Nanofluids.</li>
+      <li>Ms. Anisha Devi (2K20-Ph.D.-Math-519) — Awarded. Title: Higher Order Finite Element Analysis and Approximations of Nonlinear Reaction-Diffusion Equations.</li>
+      <li>Mr. Rohit Sharma (22RMA004) — Ongoing since 2022. Title: Mixed Finite Element Methods for Time Dependent Fourth Order Problems.</li>
+      <li>Mr. Abhishek Latwal (25RMA003) — Ongoing since 2025.</li>
+    </ul>
+
+    <p><b>M.Sc. Project Supervision</b></p>
+    <ol>
+      <li>Deb Kumar Bhakat (23MMA018), Numerical Approximation of the One-Dimensional Burgers'-Fisher Equation Using Finite Element Method, 2025.</li>
+      <li>Sakshi (23MMA006), Numerical Approximation of the One-Dimensional Fisher Equation Using Finite Element Method, 2025.</li>
+      <li>Vinay (23MMA019), Numerical Approximation of the One-Dimensional Burgers Equation Using Finite Element Method, 2025.</li>
+    </ol>
+
+    <p><b>B.Tech. Project Supervision</b></p>
+    <ol>
+      <li>Arman Shukla (21BMA009), Mrigesh Thakur (21BMA010), Maanas Sood (21BMA013), Dharuva Thakur (21BMA016), Adaptive Strategy Selection Framework Using Hidden Markov Models for Market Regime Detection, 2025.</li>
+      <li>Yachna Arora (21BMA008), Gaganpreet Kaur (21BMA032), Komal (21BMA035), Multi-Object Detection and Motion Tracking for Assistive Technology, 2025.</li>
+    </ol>
+
+    <p><b>Workshops Conducted</b></p>
+    <ul>
+      <li>2nd Workshop on Applications of MATLAB in Engineering and Science, NIT Hamirpur, 15–19 December 2021.</li>
+      <li>e-Workshop on Applications of Financial Mathematics in Stock Market, NIT Hamirpur, 25–29 May 2022.</li>
+    </ul>
+
+    <p><b>Workshops Attended</b></p>
+    <ul>
+      <li>Indo-French Workshop on Innovative Numerical Methods, Department of Mathematics, IIT Roorkee, January 06–10, 2025.</li>
+    </ul>
+
+    <p><b>Conferences Conducted</b></p>
+    <ul>
+      <li>4th International Conference on Nonlinear Applied Analysis and Optimization (ICNAAO 2024), NIT Hamirpur, 17–19 October 2024.</li>
+    </ul>
+
+    <p><b>International Exposure</b></p>
+    <ul>
+      <li>15th Conference on Dynamical Systems Applied to Biology and Natural Sciences (DSABNS 2024), NOVA FCT, Universidade NOVA de Lisboa, Portugal, February 5–9, 2024.</li>
+    </ul>
+
+    <p><b>Expert Lectures Delivered</b></p>
+    <ul>
+      <li>Solutions of Some Differential Equations by Finite Element Method, FDP on Recent Techniques for the Solutions of Nonlinear Differential Equations, JIIT Noida, 23–28 August 2021.</li>
+      <li>The basics of MATLAB and its applications in data analysis, e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
+      <li>Research and Publication Ethics, e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
+    </ul>
+  </section>
+
+  <section id="publications">
+    <h2>Publications (Latest First)</h2>
+    <ol>
+      <li><b>2025</b> — Anisha Devi, O.P. Yadav. “A numerical study of the generalized FitzHugh-Nagumo equation using a higher order Galerkin finite element method.” <i>Computational Mathematics and Mathematical Physics</i>, Vol. 65, pp. 629–648, April 2025.</li>
+      <li><b>2025</b> — R. Sharma, O.P. Yadav. “The Evolution of Finite Element Approaches in Reaction-Diffusion Modeling.” <i>Archives of Computational Methods in Engineering</i>, Vol. 32, pp. 2745–2766, January 2025.</li>
+
+      <li><b>2024</b> — Sanjalee Maheshwari, Y.D. Sharma, O.P. Yadav, Ankita Bisht. “Weak nonlinear thermo bioconvection: Heat transfer via artificial neural network.” <i>International Communications in Heat and Mass Transfer</i>, Vol. 159, 108090, December 2024.</li>
+      <li><b>2024</b> — Anisha Devi, O.P. Yadav. “Analysis and Simulation of the (2+1)-Dimensional Fisher’s Reaction-Diffusion Equation with Higher Order Finite Element Method.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, June 2024.</li>
+      <li><b>2024</b> — Anisha Devi, O.P. Yadav. “Higher Order Galerkin Finite Element Method for (1+2)-Dimensional Generalized Benjamin-Bona-Mahony-Burgers Equation: A Numerical Investigation.” <i>Wave Motion</i>, Vol. 128, 103321, March 2024.</li>
+      <li><b>2024</b> — Anisha Devi, O.P. Yadav. “Higher-Order Galerkin Finite Element Method for Nonlinear Coupled Reaction-Diffusion Models.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, March 2024.</li>
+      <li><b>2024</b> — Sanjalee, Y.D. Sharma, O.P. Yadav. “Unsteady Double-Diffusive Brinkman-Bènard Convection in Cylindrical Enclosure Saturated with Hybrid Bi-Viscous Bingham Nanoliquid.” <i>European Journal of Mechanics-B/Fluids</i>, Vol. 105, pp. 138–150, May 2024.</li>
+
+      <li><b>2023</b> — Sanjalee, YD Sharma, OP Yadav. “Convective instability of Blood-based Au−Fe3O4 hybrid nanoliquid under the presence of magnetic field with internal heat source: Application to cancer treatment.” <i>Zeitschrift für Angewandte Mathematik und Mechanik (ZAMM)</i>, Vol. 103(12), e202200518, July 2023. <a href="https://doi.org/10.1002/zamm.202200518" target="_blank" rel="noopener">DOI</a></li>
+      <li><b>2023</b> — Sanjalee, YD Sharma, OP Yadav. “Study of Thermal Convection in Chemically Reactive Carbon Nanotube Suspension Saturated in Anisotropic Porous Enclosure.” <i>International Journal of Modern Physics B</i>, Vol. 37(25), 2350297, July 2023.</li>
+      <li><b>2023</b> — Sanjalee, YD Sharma, OP Yadav. “The linear and non-linear study of effect of rotation and internal heat source/sink on Bènard convection.” <i>Fluid Dynamics Research</i>, 55(4), 045503, July 2023.</li>
+      <li><b>2023</b> — Sanjalee, YD Sharma, OP Yadav. “Study of Heat Transfer in Anisotropic Porous Enclosures Saturated with Casson Fluid Based Carbon Nanotube Suspension.” <i>Journal of Porous Media</i>, 26(10), 85–107, May 2023.</li>
+      <li><b>2023</b> — Sanjalee, YD Sharma, OP Yadav. “Regular and chaotic Rayleigh Bénard convection in hybrid Casson nanoliquid under the effect of non-uniform heat source.” <i>Chinese Journal of Physics</i>, 83, 28–50, Feb 2023.</li>
+
+      <li><b>2022</b> — Sanjalee, YD Sharma, OP Yadav. “Entropy Generation in Magnetohydrodynamics Flow of Hybrid Casson Nanofluid in Porous Channel: Lie Group Analysis.” <i>International Journal of Applied and Computational Mathematics</i>, 8(5), 1–28, September 2022.</li>
+      <li><b>2022</b> — Sanjalee, YD Sharma, OP Yadav. “Stability analysis of double diffusive thermo-bioconvection in aerobic-microorganism-suspended Casson nanofluid.” <i>The European Physical Journal Plus</i>, 137, 1–13, June 2022.</li>
+
+      <li><b>2021</b> — K. Charan, O.P. Yadav, B.C. Tewari. “Charged anisotropic spherical collapse with heat flow.” <i>The European Physical Journal C</i>, 81, 1–11, Jan 2021.</li>
+
+      <li><b>2019</b> — O.P. Yadav, R. Jiwari. “A finite element approach for analysis and computational modelling of coupled reaction diffusion models.” <i>Numerical Methods for Partial Differential Equations</i>, 35(2), 830–850, 2019.</li>
+      <li><b>2019</b> — O.P. Yadav, R. Jiwari. “Some soliton-type analytical solutions and numerical simulation of nonlinear Schrödinger equation.” <i>Nonlinear Dynamics</i>, 95, 2825–2836, 2019.</li>
+      <li><b>2019</b> — O.P. Yadav, R. Jiwari. “A finite element approach to capture Turing patterns of autocatalytic Brusselator model.” <i>Journal of Mathematical Chemistry</i>, 57, 769–789, 2019.</li>
+
+      <li><b>2017</b> — O.P. Yadav, R. Jiwari. “Finite element analysis and approximation of Burgers’-Fisher equation.” <i>Numerical Methods for Partial Differential Equations</i>, 33(5), 1652–1677, 2017.</li>
+    </ol>
+  </section>
+
+  <section id="administration">
+    <h2>Administration</h2>
+    <p><b>Current Assignments</b></p>
+    <ul>
+      <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
+      <li>Faculty Incharge (NEP), NIT Hamirpur</li>
+      <li>OIC, Examination &amp; Time Table</li>
+    </ul>
+
+    <p><b>Previous Assignments</b></p>
+    <ul>
+      <li>Convener, Departmental Bachelor Programme Committee, DoMSC, NIT Hamirpur</li>
+      <li>Deputy Center Incharge CCMT/CCMN 2024 (Admissions), NIT Hamirpur</li>
+      <li>ANO NIRF, NIT Hamirpur</li>
+      <li>AFI Purchase, NIT Hamirpur</li>
+      <li>AFI Technical Activities, NIT Hamirpur</li>
+      <li>Convener, Departmental Doctoral Programme Committee, DoMSC, NIT Hamirpur</li>
+      <li>Member Secretary, Doctoral Students Selection Committee, DoMSC, NIT Hamirpur</li>
+      <li>OIC Registration, Lab and Classrooms, Library, DoMSC, NIT Hamirpur</li>
+    </ul>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <ul>
+      <li><b>Department:</b> Department of Mathematics &amp; Scientific Computing, NIT Hamirpur - 177005</li>
+      <li><b>Phone:</b> 01972-254108</li>
+      <li><b>Email:</b> <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    © <span id="y"></span> Dr. Om Prakash Yadav · Hosted on GitHub Pages
+  </div>
+</footer>
+
+<script>
+  document.getElementById("y").textContent = new Date().getFullYear();
+</script>
+
 </body>
 </html>

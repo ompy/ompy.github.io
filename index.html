@@ -33,42 +33,76 @@
     .small{font-size:14px; color:var(--muted)}
     ol{margin:8px 0 0 20px; padding:0}
     footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px}
-.hero-flex{
-  display:flex;
-  align-items:flex-start;
-  gap:150px;
-}
 
-.hero-text{
-  max-width:780px;
-}
+    .hero-flex{
+      display:flex;
+      align-items:flex-start;
+      gap:150px;
+    }
 
-.hero-photo{
-  width:130px;
-  height:150px;
-  object-fit:cover;
-  border-radius:12px;
-  border:1px solid var(--line);
-  margin-top:4px;
-}
+    .hero-text{
+      max-width:780px;
+    }
 
-/* --- Overview: smaller/lighter --- */
-.overview-card{
-  padding:12px 14px;
-}
-.overview-card p{
-  font-size:15px;
-  color:var(--muted);
-  margin-bottom:0;
-}
+    .hero-photo{
+      width:130px;
+      height:150px;
+      object-fit:cover;
+      border-radius:12px;
+      border:1px solid var(--line);
+      margin-top:4px;
+    }
 
-/* Mobile: stack neatly */
-@media (max-width: 768px){
-  .hero-flex{
-    flex-direction:column;
-    gap:12px;
-  }
-}
+    /* --- Overview: smaller/lighter --- */
+    .overview-card{
+      padding:12px 14px;
+    }
+    .overview-card p{
+      font-size:15px;
+      color:var(--muted);
+      margin-bottom:0;
+    }
+
+    /* --- Custom segmented scroll indicator --- */
+    .scroll-indicator{
+      position:fixed;
+      right:18px;
+      top:50%;
+      transform:translateY(-50%);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      z-index:9999;
+      pointer-events:none;
+    }
+    .scroll-indicator span{
+      display:block;
+      width:24px;
+      height:3px;
+      background:#cfcfcf;
+      border-radius:2px;
+      transition:background 0.2s ease, transform 0.2s ease;
+    }
+    .scroll-indicator span.active{
+      background:#222;
+      transform:scaleX(1.08);
+    }
+
+    /* Mobile: stack neatly */
+    @media (max-width: 768px){
+      .hero-flex{
+        flex-direction:column;
+        gap:12px;
+      }
+
+      /* keep indicator a bit inward on small screens */
+      .scroll-indicator{
+        right:10px;
+      }
+      .scroll-indicator span{
+        width:20px;
+      }
+    }
 
     @media (min-width: 800px){ .grid{grid-template-columns: 0.9fr auto} }
   </style>
@@ -88,12 +122,12 @@
   </div>
 </header>
 
- <div class="wrap hero hero-flex">
+<div class="wrap hero hero-flex">
   <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
     <p class="subtitle">Assistant Professor,</p>
-        <p class="mesubtitleta">Department of Mathematics &amp; Scientific Computing</p>
-        <p class="subtitle">National Institute of Technology Hamirpur (H.P.)</p>
+    <p class="mesubtitleta">Department of Mathematics &amp; Scientific Computing</p>
+    <p class="subtitle">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
   </div>
 
@@ -102,29 +136,25 @@
        alt="Dr. Om Prakash Yadav">
 </div>
 
-
-
 <main class="wrap">
 
   <div class="grid">
-   <div class="card overview-card">
-  <h2>Overview</h2>
+    <div class="card overview-card">
+      <h2>Overview</h2>
       <p>
-We work in applied mathematics, focusing on the numerical analysis of partial differential equations, with particular emphasis on finite element and finite difference methods. Our interests include reaction–diffusion models, higher-order numerical schemes, and, more recently, the exploration of physics-informed neural networks (PINNs) for scientific computing applications.      </p>
-      <p class="small">
-       
+        We work in applied mathematics, focusing on the numerical analysis of partial differential equations, with particular emphasis on finite element and finite difference methods. Our interests include reaction–diffusion models, higher-order numerical schemes, and, more recently, the exploration of physics-informed neural networks (PINNs) for scientific computing applications.
       </p>
+      <p class="small"></p>
     </div>
     <div class="card overview-card">
       <h2>Quick Links</h2>
       <ul>
-<li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en"target="_blank" rel="noopener">Google Scholar</a></li>
-<li><a href="https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav"target="_blank" rel="noopener">NITH Faculty Profile</a></li>
-<li><a href="https://nith.ac.in/td/index.html"target="_blank" rel="noopener">NITH Directory</a></li>
-<li><a href="https://nith.ac.in/bachelor-course-structure-syllabus"target="_blank" rel="noopener">NITH BTech Courses</a></li>
-<li><a href="https://nith.ac.in/uploads/topics/updated-math-syllabus-msc-nep202017222488503953.pdf"target="_blank" rel="noopener">NITH MSc Courses</a></li>
-<li><a href="https://nith.ac.in/downloads-for-faculty-staff"target="_blank" rel="noopener">NITH Faculty Downloads</a></li>
-
+        <li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></li>
+        <li><a href="https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav" target="_blank" rel="noopener">NITH Faculty Profile</a></li>
+        <li><a href="https://nith.ac.in/td/index.html" target="_blank" rel="noopener">NITH Directory</a></li>
+        <li><a href="https://nith.ac.in/bachelor-course-structure-syllabus" target="_blank" rel="noopener">NITH BTech Courses</a></li>
+        <li><a href="https://nith.ac.in/uploads/topics/updated-math-syllabus-msc-nep202017222488503953.pdf" target="_blank" rel="noopener">NITH MSc Courses</a></li>
+        <li><a href="https://nith.ac.in/downloads-for-faculty-staff" target="_blank" rel="noopener">NITH Faculty Downloads</a></li>
       </ul>
     </div>
   </div>
@@ -202,11 +232,13 @@ We work in applied mathematics, focusing on the numerical analysis of partial di
       <li>2nd Workshop on Applications of MATLAB in Engineering and Science, NIT Hamirpur, 15–19 December 2021.</li>
       <li>e-Workshop on Applications of Financial Mathematics in Stock Market, NIT Hamirpur, 25–29 May 2022.</li>
     </ul>
- <p><b>Faculty Development Programs Conducted</b></p>
+
+    <p><b>Faculty Development Programs Conducted</b></p>
     <ul>
-      <li>Unified Approaches to Solving Differential Equations: From Classical Methods to Neural Networks (UniSDE-2025), Conducted by Department of Mathematics and Sc. Comp., NIT Hamirpur, Sponsored by E&ICT Academy, PDPM IIITDM Jabalpur, during December 08–19, 2025</li>
+      <li>Unified Approaches to Solving Differential Equations: From Classical Methods to Neural Networks (UniSDE-2025), Conducted by Department of Mathematics and Sc. Comp., NIT Hamirpur, Sponsored by E&amp;ICT Academy, PDPM IIITDM Jabalpur, during December 08–19, 2025</li>
     </ul>
-     <p><b>Conferences Conducted</b></p>
+
+    <p><b>Conferences Conducted</b></p>
     <ul>
       <li>4th International Conference on Nonlinear Applied Analysis and Optimization (ICNAAO 2024), NIT Hamirpur, 17–19 October 2024.</li>
     </ul>
@@ -216,7 +248,6 @@ We work in applied mathematics, focusing on the numerical analysis of partial di
       <li>Indo-French Workshop on Innovative Numerical Methods, Department of Mathematics, IIT Roorkee, January 06–10, 2025.</li>
     </ul>
 
-   
     <p><b>Conferences Attended</b></p>
     <ul>
       <li>15th Conference on Dynamical Systems Applied to Biology and Natural Sciences (DSABNS 2024), NOVA FCT, Universidade NOVA de Lisboa, Portugal, February 5–9, 2024.</li>
@@ -231,7 +262,7 @@ We work in applied mathematics, focusing on the numerical analysis of partial di
   </section>
 
   <section id="publications">
-    <h2>Publications </h2>
+    <h2>Publications</h2>
     <ol reversed>
       <li>Anisha Devi, O.P. Yadav. “A numerical study of the generalized FitzHugh-Nagumo equation using a higher order Galerkin finite element method.” <i>Computational Mathematics and Mathematical Physics</i>, Vol. 65, pp. 629–648, April 2025.</li>
       <li>R. Sharma, O.P. Yadav. “The Evolution of Finite Element Approaches in Reaction-Diffusion Modeling.” <i>Archives of Computational Methods in Engineering</i>, Vol. 32, pp. 2745–2766, January 2025.</li>
@@ -261,21 +292,21 @@ We work in applied mathematics, focusing on the numerical analysis of partial di
     </ol>
   </section>
 
-<section id="projects">
-  <h2>Projects</h2>
-  <p>
-    <b>Funded Research Project (Ongoing)</b><br>
-    <b>Title:</b>
-    <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i><br>
-    <b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India<br>
-    <b>Scheme:</b> ARG-MATRICS<br>
-    <b>Role:</b> Principal Investigator<br>
-    <b>Duration:</b> 5 years<br>
-    <b>Total Grant:</b> ₹30.00 Lakhs
-  </p>
-</section>
-    
-    <section id="administration">
+  <section id="projects">
+    <h2>Projects</h2>
+    <p>
+      <b>Funded Research Project (Ongoing)</b><br>
+      <b>Title:</b>
+      <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i><br>
+      <b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India<br>
+      <b>Scheme:</b> ARG-MATRICS<br>
+      <b>Role:</b> Principal Investigator<br>
+      <b>Duration:</b> 5 years<br>
+      <b>Total Grant:</b> ₹30.00 Lakhs
+    </p>
+  </section>
+
+  <section id="administration">
     <h2>Administration</h2>
     <p><b>Current Assignments</b></p>
     <ul>
@@ -314,8 +345,39 @@ We work in applied mathematics, focusing on the numerical analysis of partial di
   </div>
 </footer>
 
+<!-- Segmented scroll indicator -->
+<div class="scroll-indicator" aria-hidden="true">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
 <script>
   document.getElementById("y").textContent = new Date().getFullYear();
+
+  (function () {
+    const bars = document.querySelectorAll('.scroll-indicator span');
+    const totalBars = bars.length;
+
+    function updateIndicator() {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+
+      let activeIndex = Math.floor(progress * totalBars);
+      if (activeIndex >= totalBars) activeIndex = totalBars - 1;
+
+      bars.forEach((bar, i) => {
+        bar.classList.toggle('active', i === activeIndex);
+      });
+    }
+
+    window.addEventListener('scroll', updateIndicator, { passive: true });
+    window.addEventListener('resize', updateIndicator);
+    updateIndicator();
+  })();
 </script>
 
 </body>

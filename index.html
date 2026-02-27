@@ -11,6 +11,7 @@
       --max: 980px;
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth;}
     body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); line-height:1.65}
     a{color:var(--link); text-decoration:none}
     a:hover{text-decoration:underline}
@@ -24,7 +25,6 @@
     .subtitle{margin:6px 0 0; color:var(--muted)}
     .meta{margin:10px 0 0; color:var(--muted); font-size:14px}
     main{padding:18px 0 46px}
-    section{padding:18px 0; border-top:1px solid var(--line)}
     h2{font-size:18px; margin:0 0 10px}
     ul{margin:8px 0 0 18px; padding:0}
     li{margin:6px 0}
@@ -39,11 +39,7 @@
       align-items:flex-start;
       gap:150px;
     }
-
-    .hero-text{
-      max-width:780px;
-    }
-
+    .hero-text{ max-width:780px; }
     .hero-photo{
       width:130px;
       height:150px;
@@ -54,13 +50,44 @@
     }
 
     /* --- Overview: smaller/lighter --- */
-    .overview-card{
-      padding:12px 14px;
-    }
+    .overview-card{ padding:12px 14px; }
     .overview-card p{
       font-size:15px;
       color:var(--muted);
       margin-bottom:0;
+    }
+
+    /* --- Collapsible sections (details/summary) --- */
+    details.section{
+      padding:18px 0;
+      border-top:1px solid var(--line);
+    }
+    details.section > summary{
+      list-style:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+      margin:0 0 10px;
+      outline:none;
+    }
+    details.section > summary::-webkit-details-marker{ display:none; }
+    details.section > summary h2{
+      margin:0;
+      font-size:18px;
+    }
+    details.section > summary::after{
+      content:"▾";
+      margin-left:auto;
+      color:var(--muted);
+      transition:transform .15s ease;
+    }
+    details.section:not([open]) > summary::after{
+      transform:rotate(-90deg);
+    }
+    details.section:not([open]){
+      padding-bottom:10px;
     }
 
     /* --- Custom segmented scroll indicator --- */
@@ -94,14 +121,8 @@
         flex-direction:column;
         gap:12px;
       }
-
-      /* keep indicator a bit inward on small screens */
-      .scroll-indicator{
-        right:10px;
-      }
-      .scroll-indicator span{
-        width:20px;
-      }
+      .scroll-indicator{ right:10px; }
+      .scroll-indicator span{ width:20px; }
     }
 
     @media (min-width: 800px){ .grid{grid-template-columns: 0.9fr auto} }
@@ -118,6 +139,7 @@
       <a href="#publications">Publications</a>
       <a href="#projects">Projects</a>
       <a href="#administration">Administration</a>
+      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
@@ -126,14 +148,12 @@
   <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
     <p class="subtitle">Assistant Professor,</p>
-    <p class="mesubtitleta">Department of Mathematics &amp; Scientific Computing</p>
+    <p class="subtitle">Department of Mathematics &amp; Scientific Computing</p>
     <p class="subtitle">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
   </div>
 
-  <img class="hero-photo"
-       src="profile.jpeg"
-       alt="Dr. Om Prakash Yadav">
+  <img class="hero-photo" src="profile.jpeg" alt="Dr. Om Prakash Yadav">
 </div>
 
 <main class="wrap">
@@ -146,6 +166,7 @@
       </p>
       <p class="small"></p>
     </div>
+
     <div class="card overview-card">
       <h2>Quick Links</h2>
       <ul>
@@ -159,17 +180,19 @@
     </div>
   </div>
 
-  <section id="academic">
-    <h2>Academic</h2>
+  <!-- Collapsible sections -->
+  <details class="section" id="academic" open>
+    <summary><h2>Academic</h2></summary>
     <ul>
       <li>B.Sc. from University of Allahabad (2009).</li>
       <li>M.Sc. from IIT Kanpur (2011).</li>
       <li>Ph.D. from IIT Roorkee (2019).</li>
     </ul>
-  </section>
+  </details>
 
-  <section id="teaching">
-    <h2>Teaching</h2>
+  <details class="section" id="teaching">
+    <summary><h2>Teaching</h2></summary>
+
     <p><b>Courses Taught</b></p>
     <ul>
       <li>MA-211: Discrete Mathematics</li>
@@ -188,15 +211,19 @@
 
     <p><b>Ongoing Teaching</b></p>
     <ul>
-      <li>MA-733: Finite Element Method
-      <a href="assets/PDFs/MA733 FEM Syllabus.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
-      <li>MA-242: Mathematical Modeling and Simulation
-      <a href="assets/PDFs/MA242MMS.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
+      <li>
+        MA-733: Finite Element Method
+        <a href="assets/PDFs/MA733 FEM Syllabus.pdf" target="_blank" rel="noopener">(Syllabus)</a>
+      </li>
+      <li>
+        MA-242: Mathematical Modeling and Simulation
+        <a href="assets/PDFs/MA242MMS.pdf" target="_blank" rel="noopener">(Syllabus)</a>
+      </li>
     </ul>
-  </section>
+  </details>
 
-  <section id="research">
-    <h2>Research</h2>
+  <details class="section" id="research">
+    <summary><h2>Research</h2></summary>
 
     <p><b>Area of Interest</b></p>
     <ul>
@@ -259,41 +286,35 @@
       <li>The basics of MATLAB and its applications in data analysis, e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
       <li>Research and Publication Ethics, e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
     </ul>
-  </section>
+  </details>
 
-  <section id="publications">
-    <h2>Publications</h2>
+  <details class="section" id="publications">
+    <summary><h2>Publications</h2></summary>
     <ol reversed>
       <li>Anisha Devi, O.P. Yadav. “A numerical study of the generalized FitzHugh-Nagumo equation using a higher order Galerkin finite element method.” <i>Computational Mathematics and Mathematical Physics</i>, Vol. 65, pp. 629–648, April 2025.</li>
       <li>R. Sharma, O.P. Yadav. “The Evolution of Finite Element Approaches in Reaction-Diffusion Modeling.” <i>Archives of Computational Methods in Engineering</i>, Vol. 32, pp. 2745–2766, January 2025.</li>
-
       <li>Sanjalee Maheshwari, Y.D. Sharma, O.P. Yadav, Ankita Bisht. “Weak nonlinear thermo bioconvection: Heat transfer via artificial neural network.” <i>International Communications in Heat and Mass Transfer</i>, Vol. 159, 108090, December 2024.</li>
       <li>Anisha Devi, O.P. Yadav. “Analysis and Simulation of the (2+1)-Dimensional Fisher’s Reaction-Diffusion Equation with Higher Order Finite Element Method.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, June 2024.</li>
       <li>Anisha Devi, O.P. Yadav. “Higher Order Galerkin Finite Element Method for (1+2)-Dimensional Generalized Benjamin-Bona-Mahony-Burgers Equation: A Numerical Investigation.” <i>Wave Motion</i>, Vol. 128, 103321, March 2024.</li>
       <li>Anisha Devi, O.P. Yadav. “Higher-Order Galerkin Finite Element Method for Nonlinear Coupled Reaction-Diffusion Models.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, March 2024.</li>
       <li>Sanjalee, Y.D. Sharma, O.P. Yadav. “Unsteady Double-Diffusive Brinkman-Bènard Convection in Cylindrical Enclosure Saturated with Hybrid Bi-Viscous Bingham Nanoliquid.” <i>European Journal of Mechanics-B/Fluids</i>, Vol. 105, pp. 138–150, May 2024.</li>
-
       <li>Sanjalee, YD Sharma, OP Yadav. “Convective instability of Blood-based Au−Fe3O4 hybrid nanoliquid under the presence of magnetic field with internal heat source: Application to cancer treatment.” <i>Zeitschrift für Angewandte Mathematik und Mechanik (ZAMM)</i>, Vol. 103(12), e202200518, July 2023. <a href="https://doi.org/10.1002/zamm.202200518" target="_blank" rel="noopener">DOI</a></li>
       <li>Sanjalee, YD Sharma, OP Yadav. “Study of Thermal Convection in Chemically Reactive Carbon Nanotube Suspension Saturated in Anisotropic Porous Enclosure.” <i>International Journal of Modern Physics B</i>, Vol. 37(25), 2350297, July 2023.</li>
       <li>Sanjalee, YD Sharma, OP Yadav. “The linear and non-linear study of effect of rotation and internal heat source/sink on Bènard convection.” <i>Fluid Dynamics Research</i>, 55(4), 045503, July 2023.</li>
       <li>Sanjalee, YD Sharma, OP Yadav. “Study of Heat Transfer in Anisotropic Porous Enclosures Saturated with Casson Fluid Based Carbon Nanotube Suspension.” <i>Journal of Porous Media</i>, 26(10), 85–107, May 2023.</li>
       <li>Sanjalee, YD Sharma, OP Yadav. “Regular and chaotic Rayleigh Bénard convection in hybrid Casson nanoliquid under the effect of non-uniform heat source.” <i>Chinese Journal of Physics</i>, 83, 28–50, Feb 2023.</li>
-
       <li>Sanjalee, YD Sharma, OP Yadav. “Entropy Generation in Magnetohydrodynamics Flow of Hybrid Casson Nanofluid in Porous Channel: Lie Group Analysis.” <i>International Journal of Applied and Computational Mathematics</i>, 8(5), 1–28, September 2022.</li>
       <li>Sanjalee, YD Sharma, OP Yadav. “Stability analysis of double diffusive thermo-bioconvection in aerobic-microorganism-suspended Casson nanofluid.” <i>The European Physical Journal Plus</i>, 137, 1–13, June 2022.</li>
-
       <li>K. Charan, O.P. Yadav, B.C. Tewari. “Charged anisotropic spherical collapse with heat flow.” <i>The European Physical Journal C</i>, 81, 1–11, Jan 2021.</li>
-
       <li>O.P. Yadav, R. Jiwari. “A finite element approach for analysis and computational modelling of coupled reaction diffusion models.” <i>Numerical Methods for Partial Differential Equations</i>, 35(2), 830–850, 2019.</li>
       <li>O.P. Yadav, R. Jiwari. “Some soliton-type analytical solutions and numerical simulation of nonlinear Schrödinger equation.” <i>Nonlinear Dynamics</i>, 95, 2825–2836, 2019.</li>
       <li>O.P. Yadav, R. Jiwari. “A finite element approach to capture Turing patterns of autocatalytic Brusselator model.” <i>Journal of Mathematical Chemistry</i>, 57, 769–789, 2019.</li>
-
       <li>O.P. Yadav, R. Jiwari. “Finite element analysis and approximation of Burgers’-Fisher equation.” <i>Numerical Methods for Partial Differential Equations</i>, 33(5), 1652–1677, 2017.</li>
     </ol>
-  </section>
+  </details>
 
-  <section id="projects">
-    <h2>Projects</h2>
+  <details class="section" id="projects">
+    <summary><h2>Projects</h2></summary>
     <p>
       <b>Funded Research Project (Ongoing)</b><br>
       <b>Title:</b>
@@ -304,10 +325,11 @@
       <b>Duration:</b> 5 years<br>
       <b>Total Grant:</b> ₹30.00 Lakhs
     </p>
-  </section>
+  </details>
 
-  <section id="administration">
-    <h2>Administration</h2>
+  <details class="section" id="administration">
+    <summary><h2>Administration</h2></summary>
+
     <p><b>Current Assignments</b></p>
     <ul>
       <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
@@ -326,16 +348,16 @@
       <li>Member Secretary, Doctoral Students Selection Committee, DoMSC, NIT Hamirpur</li>
       <li>OIC Registration, Lab and Classrooms, Library, DoMSC, NIT Hamirpur</li>
     </ul>
-  </section>
+  </details>
 
-  <section id="contact">
-    <h2>Contact</h2>
+  <details class="section" id="contact">
+    <summary><h2>Contact</h2></summary>
     <ul>
       <li><b>Department:</b> Department of Mathematics &amp; Scientific Computing, NIT Hamirpur - 177005</li>
       <li><b>Phone:</b> 01972-254108</li>
       <li><b>Email:</b> <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></li>
     </ul>
-  </section>
+  </details>
 
 </main>
 
@@ -354,14 +376,16 @@
   <span></span>
   <span></span>
   <span></span>
-   <span></span>
-   <span></span>
-   <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
 </div>
 
-  <script>
+<script>
+  // footer year
   document.getElementById("y").textContent = new Date().getFullYear();
 
+  // segmented scroll indicator
   (function () {
     const bars = document.querySelectorAll('.scroll-indicator span');
     const totalBars = bars.length;
@@ -383,8 +407,8 @@
     window.addEventListener('resize', updateIndicator);
     updateIndicator();
   })();
-</script>
-    <script>
+
+  // accordion behavior (only one open at a time)
   document.querySelectorAll('details.section').forEach(d => {
     d.addEventListener('toggle', () => {
       if (!d.open) return;
@@ -393,6 +417,21 @@
       });
     });
   });
+
+  // ensure nav clicks / hash open the correct section even if it is collapsed
+  function openFromHash() {
+    const id = (location.hash || '').replace('#', '');
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (target && target.tagName.toLowerCase() === 'details') {
+      target.setAttribute('open', '');
+      // optional: bring the summary nicely into view after it opens
+      const summary = target.querySelector('summary');
+      if (summary) summary.scrollIntoView({ block: 'start' });
+    }
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
 </script>
 
 </body>

@@ -411,14 +411,44 @@
   })();
 
   // accordion behavior (only one open at a time)
-  document.querySelectorAll('details.section').forEach(d => {
-    d.addEventListener('toggle', () => {
-      if (!d.open) return;
-      document.querySelectorAll('details.section').forEach(other => {
-        if (other !== d) other.removeAttribute('open');
+  // smooth open/close for each details section (no auto-collapsing others)
+document.querySelectorAll('details.section').forEach((details) => {
+  const content = details.querySelector('.details-content');
+  if (!content) return;
+
+  // initial state
+  content.style.height = details.open ? 'auto' : '0px';
+
+  details.addEventListener('toggle', () => {
+    // stop previous transition
+    content.style.transition = 'none';
+
+    if (details.open) {
+      // opening: 0 -> full height
+      content.style.height = '0px';
+      const full = content.scrollHeight;
+
+      requestAnimationFrame(() => {
+        content.style.transition = 'height 220ms ease';
+        content.style.height = full + 'px';
       });
-    });
+
+      // after animation, let it auto-size
+      setTimeout(() => {
+        if (details.open) content.style.height = 'auto';
+      }, 240);
+    } else {
+      // closing: full -> 0
+      const full = content.scrollHeight;
+      content.style.height = full + 'px';
+
+      requestAnimationFrame(() => {
+        content.style.transition = 'height 220ms ease';
+        content.style.height = '0px';
+      });
+    }
   });
+});
 
   // ensure nav clicks / hash open the correct section even if it is collapsed
   function openFromHash() {

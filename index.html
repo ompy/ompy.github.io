@@ -359,7 +359,7 @@
    <span></span>
 </div>
 
-<script>
+
   document.getElementById("y").textContent = new Date().getFullYear();
 
   (function () {
@@ -383,6 +383,16 @@
     window.addEventListener('resize', updateIndicator);
     updateIndicator();
   })();
+  <script>
+  // Accordion behavior (optional)
+  document.querySelectorAll('details.section').forEach(d => {
+    d.addEventListener('toggle', () => {
+      if (!d.open) return;
+      document.querySelectorAll('details.section').forEach(other => {
+        if (other !== d) other.removeAttribute('open');
+      });
+    });
+  });
 </script>
 
 </body>

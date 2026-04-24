@@ -18,8 +18,28 @@
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
     header{border-bottom:1px solid var(--line); position:sticky; top:0; background:rgba(255,255,255,.95); backdrop-filter:saturate(180%) blur(8px); z-index:10}
     nav{display:flex; gap:10px; flex-wrap:wrap; padding:12px 0}
-    nav a{font-size:14px; color:var(--muted); padding:6px 8px; border-radius:8px}
-    nav a:hover{background:var(--card); color:var(--text); text-decoration:none}
+    nav a{
+  font-size:14px;
+  color:var(--muted);
+  padding:6px 10px;
+  border-radius:999px;
+  transition:all .25s ease;
+}
+
+nav a:hover{
+  background:rgba(249,250,251,.85);
+  color:var(--text);
+  text-decoration:none;
+}
+
+nav a.active{
+  color:#111827;
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:0 4px 18px rgba(0,0,0,.12);
+  backdrop-filter:blur(10px) saturate(160%);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);
+}
     .hero{padding:26px 0 8px}
     .name{font-size:30px; margin:0}
     .subtitle{margin:6px 0 0; color:var(--muted)}
@@ -59,9 +79,10 @@
 
     /* --- Collapsible sections (details/summary) --- */
     details.section{
-      padding:18px 0;
-      border-top:1px solid var(--line);
-    }
+  padding:18px 0;
+  border-top:1px solid var(--line);
+  scroll-margin-top:70px;
+}
     details.section > summary{
       list-style:none;
       cursor:pointer;
@@ -449,7 +470,34 @@ document.querySelectorAll('details.section').forEach((details) => {
     }
   });
 });
+<script>
+  const navLinks = document.querySelectorAll("nav a");
+  const sections = document.querySelectorAll("details.section");
 
+  function updateActiveNav() {
+    let current = "";
+
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+
+      if (rect.top <= 120 && rect.bottom >= 120) {
+        current = section.id;
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove("active");
+
+      if (link.getAttribute("href") === "#" + current) {
+        link.classList.add("active");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", updateActiveNav, { passive: true });
+  window.addEventListener("resize", updateActiveNav);
+  updateActiveNav();
+</script>
   // ensure nav clicks / hash open the correct section even if it is collapsed
   function openFromHash() {
     const id = (location.hash || '').replace('#', '');

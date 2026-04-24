@@ -3,11 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dr. Om Prakash Yadav</title>
-  <meta name="description" content="Dr. Om Prakash Yadav - Academic profile: research, teaching, publications, projects, and administration." />
+
+  <!-- Primary SEO -->
+  <title>Dr. Om Prakash Yadav | Assistant Professor, Mathematics, NIT Hamirpur | FEM, Numerical Analysis, PINNs</title>
+  <meta name="description" content="Dr. Om Prakash Yadav — Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur. Research in finite element methods, numerical analysis of PDEs, reaction–diffusion models, and physics-informed neural networks (PINNs)." />
+  <meta name="keywords" content="Om Prakash Yadav, Dr Om Prakash Yadav, NIT Hamirpur Mathematics, Assistant Professor NIT Hamirpur, Finite Element Method, FEM, Numerical Analysis, Reaction Diffusion Equations, Physics Informed Neural Networks, PINNs, Applied Mathematics India, IIT Roorkee PhD, Department of Mathematics and Scientific Computing" />
+  <meta name="author" content="Dr. Om Prakash Yadav" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://opyadav-nith.github.io/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="profile" />
+  <meta property="og:title" content="Dr. Om Prakash Yadav — Assistant Professor, NIT Hamirpur" />
+  <meta property="og:description" content="Academic profile: research in FEM, numerical analysis of PDEs, reaction–diffusion models and PINNs. Teaching, publications, projects and administration at NIT Hamirpur." />
+  <meta property="og:image" content="profile.jpeg" />
+  <meta property="profile:first_name" content="Om Prakash" />
+  <meta property="profile:last_name" content="Yadav" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Dr. Om Prakash Yadav — NIT Hamirpur" />
+  <meta name="twitter:description" content="Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur." />
+  <meta name="twitter:image" content="profile.jpeg" />
+
+  <!-- Favicon (optional — replace with your own if you have one) -->
+  <link rel="icon" type="image/jpeg" href="profile.jpeg" />
+
+  <!-- Structured data: helps Google show a rich knowledge-style card -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Dr. Om Prakash Yadav",
+    "givenName": "Om Prakash",
+    "familyName": "Yadav",
+    "honorificPrefix": "Dr.",
+    "jobTitle": "Assistant Professor",
+    "image": "profile.jpeg",
+    "email": "mailto:opyadav@nith.ac.in",
+    "telephone": "+91-1972-254108",
+    "worksFor": {
+      "@type": "CollegeOrUniversity",
+      "name": "National Institute of Technology Hamirpur",
+      "department": "Department of Mathematics & Scientific Computing",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Hamirpur",
+        "addressRegion": "Himachal Pradesh",
+        "postalCode": "177005",
+        "addressCountry": "IN"
+      }
+    },
+    "alumniOf": [
+      { "@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Roorkee" },
+      { "@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Kanpur" },
+      { "@type": "CollegeOrUniversity", "name": "University of Allahabad" }
+    ],
+    "knowsAbout": [
+      "Finite Element Method",
+      "Numerical Analysis",
+      "Partial Differential Equations",
+      "Reaction–Diffusion Equations",
+      "Physics Informed Neural Networks"
+    ],
+    "sameAs": [
+      "https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en",
+      "https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav"
+    ]
+  }
+  </script>
+
   <style>
     :root{
-      --bg:#ffffff; --text:#111827; --muted:#4b5563; --line:#e5e7eb; --card:#f9fafb; --link:#1d4ed8;
+      --bg:#ffffff; --text:#111827; --muted:#4b5563; --line:#e5e7eb;
+      --card:#f9fafb; --link:#1d4ed8; --accent:#0f766e; --accent-soft:#ecfdf5;
       --max: 980px;
     }
     *{box-sizing:border-box}
@@ -16,32 +85,47 @@
     a{color:var(--link); text-decoration:none}
     a:hover{text-decoration:underline}
     .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
-    header{border-bottom:1px solid var(--line); position:sticky; top:0; background:rgba(255,255,255,.95); backdrop-filter:saturate(180%) blur(8px); z-index:10}
-    nav{display:flex; gap:10px; flex-wrap:wrap; padding:12px 0}
+
+    /* Glassy sticky header */
+    header{
+      position:sticky; top:0;
+      background:linear-gradient(135deg, rgba(255,255,255,0.65), rgba(255,255,255,0.4));
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-bottom:1px solid rgba(255,255,255,0.35);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.6) inset,
+        0 8px 24px rgba(17,24,39,0.06);
+      z-index:10;
+    }
+    nav{display:flex; gap:6px; flex-wrap:wrap; padding:12px 0}
     nav a{
-  font-size:14px;
-  color:var(--muted);
-  padding:6px 10px;
-  border-radius:999px;
-  transition:all .25s ease;
-}
+      font-size:14px;
+      color:var(--muted);
+      padding:6px 12px;
+      border-radius:999px;
+      transition:all .2s ease;
+      border:1px solid transparent;
+    }
+    nav a:hover{
+      background:rgba(255,255,255,0.6);
+      color:var(--accent);
+      border-color:rgba(255,255,255,0.7);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      text-decoration:none;
+    }
+    nav a.active{
+      color:#fff;
+      background:linear-gradient(135deg, var(--accent), #14b8a6);
+      border-color:rgba(255,255,255,0.4);
+      box-shadow:
+        0 4px 14px rgba(15,118,110,0.35),
+        0 1px 0 rgba(255,255,255,0.4) inset;
+    }
 
-nav a:hover{
-  background:rgba(249,250,251,.85);
-  color:var(--text);
-  text-decoration:none;
-}
-
-nav a.active{
-  color:#111827;
-  background:rgba(255,255,255,.55);
-  border:1px solid rgba(255,255,255,.65);
-  box-shadow:0 4px 18px rgba(0,0,0,.12);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-}
     .hero{padding:26px 0 8px}
-    .name{font-size:30px; margin:0}
+    .name{font-size:30px; margin:0; letter-spacing:-0.01em}
     .subtitle{margin:6px 0 0; color:var(--muted)}
     .meta{margin:10px 0 0; color:var(--muted); font-size:14px}
     main{padding:18px 0 46px}
@@ -49,40 +133,45 @@ nav a.active{
     ul{margin:8px 0 0 18px; padding:0}
     li{margin:6px 0}
     .grid{display:grid; grid-template-columns:1fr; gap:14px}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .card:hover{
+      border-color:#d1d5db;
+      box-shadow:0 2px 12px rgba(0,0,0,.04);
+    }
     .small{font-size:14px; color:var(--muted)}
     ol{margin:8px 0 0 20px; padding:0}
-    footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px}
+    footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px; margin-top:20px}
 
     .hero-flex{
       display:flex;
       align-items:flex-start;
-      gap:150px;
+      gap:clamp(24px, 8vw, 150px);
     }
     .hero-text{ max-width:780px; }
     .hero-photo{
-      width:130px;
-      height:150px;
+      width:130px; height:150px;
       object-fit:cover;
       border-radius:12px;
       border:1px solid var(--line);
       margin-top:4px;
+      box-shadow:0 4px 16px rgba(0,0,0,.06);
     }
 
-    /* --- Overview: smaller/lighter --- */
     .overview-card{ padding:12px 14px; }
-    .overview-card p{
-      font-size:15px;
-      color:var(--muted);
-      margin-bottom:0;
-    }
+    .overview-card p{ font-size:15px; color:var(--muted); margin-bottom:0; }
 
-    /* --- Collapsible sections (details/summary) --- */
+    /* Collapsible sections */
     details.section{
-  padding:18px 0;
-  border-top:1px solid var(--line);
-  scroll-margin-top:70px;
-}
+      padding:18px 0;
+      border-top:1px solid var(--line);
+      scroll-margin-top:70px;
+    }
     details.section > summary{
       list-style:none;
       cursor:pointer;
@@ -92,73 +181,63 @@ nav a.active{
       user-select:none;
       margin:0 0 10px;
       outline:none;
+      border-radius:6px;
+      padding:4px 0;
     }
     details.section > summary::-webkit-details-marker{ display:none; }
     details.section > summary h2{
       margin:0;
       font-size:18px;
+      color:var(--text);
+    }
+    details.section > summary::before{
+      content:"";
+      width:4px; height:18px;
+      background:var(--accent);
+      border-radius:2px;
+      display:inline-block;
     }
     details.section > summary::after{
       content:"▾";
       margin-left:auto;
       color:var(--muted);
-      transition:transform .15s ease;
+      transition:transform .2s ease;
     }
     details.section:not([open]) > summary::after{
       transform:rotate(-90deg);
     }
-    details.section:not([open]){
-      padding-bottom:10px;
-    }
+    details.section[open] > summary h2{ color:var(--accent); }
+    details.section:not([open]){ padding-bottom:10px; }
 
-    /* --- Custom segmented scroll indicator --- */
-    .scroll-indicator{
-      position:fixed;
-      right:18px;
-      top:50%;
-      transform:translateY(-50%);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      z-index:9999;
-      pointer-events:none;
+    /* Subsection headings inside details */
+    .sub-h{
+      font-weight:600;
+      color:var(--text);
+      margin:14px 0 4px;
+      font-size:15px;
     }
-    .scroll-indicator span{
-      display:block;
-      width:24px;
-      height:3px;
-      background:#cfcfcf;
-      border-radius:2px;
-      transition:background 0.2s ease, transform 0.2s ease;
-    }
-    .scroll-indicator span.active{
-      background:#222;
-      transform:scaleX(1.08);
-    }
+    .sub-h:first-child{ margin-top:0; }
 
-    /* Mobile: stack neatly */
     @media (max-width: 768px){
-      .hero-flex{
-        flex-direction:column;
-        gap:12px;
-      }
-      .scroll-indicator{ right:10px; }
-      .scroll-indicator span{ width:20px; }
+      .hero-flex{ flex-direction:column; gap:12px; }
+      .name{ font-size:26px; }
     }
-
-    @media (min-width: 800px){ .grid{grid-template-columns: 0.9fr auto} }
+    @media (min-width: 800px){
+      .grid{grid-template-columns: 0.9fr auto}
+    }
   </style>
 </head>
 <body>
 
 <header>
   <div class="wrap">
-    <nav>
+    <nav aria-label="Main navigation">
       <a href="#academic">Academic</a>
       <a href="#teaching">Teaching</a>
       <a href="#research">Research</a>
       <a href="#publications">Publications</a>
       <a href="#projects">Projects</a>
+      <a href="#activities">Activities</a>
       <a href="#administration">Administration</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -168,13 +247,13 @@ nav a.active{
 <div class="wrap hero hero-flex">
   <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
-    <p class="subtitle">Assistant Professor,</p>
+    <p class="subtitle">Assistant Professor</p>
     <p class="subtitle">Department of Mathematics &amp; Scientific Computing</p>
     <p class="subtitle">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
   </div>
 
-  <img class="hero-photo" src="profile.jpeg" alt="Dr. Om Prakash Yadav">
+  <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="130" height="150" />
 </div>
 
 <main class="wrap">
@@ -185,7 +264,6 @@ nav a.active{
       <p>
         We work in applied mathematics, focusing on the numerical analysis of partial differential equations, with particular emphasis on finite element and finite difference methods. Our interests include reaction–diffusion models, higher-order numerical schemes, and, more recently, the exploration of physics-informed neural networks (PINNs) for scientific computing applications.
       </p>
-      <p class="small"></p>
     </div>
 
     <div class="card overview-card">
@@ -201,7 +279,7 @@ nav a.active{
     </div>
   </div>
 
-  <!-- Collapsible sections -->
+  <!-- ACADEMIC -->
   <details class="section" id="academic" open>
     <summary><h2>Academic</h2></summary>
     <ul>
@@ -211,10 +289,11 @@ nav a.active{
     </ul>
   </details>
 
+  <!-- TEACHING -->
   <details class="section" id="teaching">
     <summary><h2>Teaching</h2></summary>
 
-    <p><b>Courses Taught</b></p>
+    <p class="sub-h">Courses Taught</p>
     <ul>
       <li>MA-211: Discrete Mathematics</li>
       <li>MA-322: Advanced Differential Equations</li>
@@ -230,23 +309,18 @@ nav a.active{
       <li>MA-211: Numerical Methods &amp; Computation</li>
     </ul>
 
-    <p><b>Ongoing Teaching</b></p>
+    <p class="sub-h">Ongoing Teaching</p>
     <ul>
-      <li>
-        MA-733: Finite Element Method
-        <a href="assets/PDFs/MA733 FEM Syllabus.pdf" target="_blank" rel="noopener">(Syllabus)</a>
-      </li>
-      <li>
-        MA-242: Mathematical Modeling and Simulation
-        <a href="assets/PDFs/MA242MMS.pdf" target="_blank" rel="noopener">(Syllabus)</a>
-      </li>
+      <li>MA-733: Finite Element Method <a href="assets/PDFs/MA733 FEM Syllabus.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
+      <li>MA-242: Mathematical Modeling and Simulation <a href="assets/PDFs/MA242MMS.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
     </ul>
   </details>
 
+  <!-- RESEARCH (supervision + interests only) -->
   <details class="section" id="research">
     <summary><h2>Research</h2></summary>
 
-    <p><b>Area of Interest</b></p>
+    <p class="sub-h">Areas of Interest</p>
     <ul>
       <li>Finite element analysis of partial differential equations</li>
       <li>Numerical Analysis</li>
@@ -254,7 +328,7 @@ nav a.active{
       <li>Physics Informed Neural Networks</li>
     </ul>
 
-    <p><b>Ph.D. Supervision</b></p>
+    <p class="sub-h">Ph.D. Supervision</p>
     <ul>
       <li>Ms. Sanjalee (2K19-PhD-Math-493), Co-supervisor — Awarded. Title: Problems on onset of convection and heat transfer in the Suspension of Nanofluids.</li>
       <li>Ms. Anisha Devi (2K20-Ph.D.-Math-519) — Awarded. Title: Higher Order Finite Element Analysis and Approximations of Nonlinear Reaction-Diffusion Equations.</li>
@@ -262,53 +336,21 @@ nav a.active{
       <li>Mr. Abhishek Latwal (25RMA003) — Ongoing since 2025.</li>
     </ul>
 
-    <p><b>M.Sc. Project Supervision</b></p>
+    <p class="sub-h">M.Sc. Project Supervision</p>
     <ol>
       <li>Deb Kumar Bhakat (23MMA018), Numerical Approximation of the One-Dimensional Burgers'-Fisher Equation Using Finite Element Method, 2025.</li>
       <li>Sakshi (23MMA006), Numerical Approximation of the One-Dimensional Fisher Equation Using Finite Element Method, 2025.</li>
       <li>Vinay (23MMA019), Numerical Approximation of the One-Dimensional Burgers Equation Using Finite Element Method, 2025.</li>
     </ol>
 
-    <p><b>B.Tech. Project Supervision</b></p>
+    <p class="sub-h">B.Tech. Project Supervision</p>
     <ol>
       <li>Arman Shukla (21BMA009), Mrigesh Thakur (21BMA010), Maanas Sood (21BMA013), Dharuva Thakur (21BMA016), Adaptive Strategy Selection Framework Using Hidden Markov Models for Market Regime Detection, 2025.</li>
       <li>Yachna Arora (21BMA008), Gaganpreet Kaur (21BMA032), Komal (21BMA035), Multi-Object Detection and Motion Tracking for Assistive Technology, 2025.</li>
     </ol>
-
-    <p><b>Workshops Conducted</b></p>
-    <ul>
-      <li>2nd Workshop on Applications of MATLAB in Engineering and Science, NIT Hamirpur, 15–19 December 2021.</li>
-      <li>e-Workshop on Applications of Financial Mathematics in Stock Market, NIT Hamirpur, 25–29 May 2022.</li>
-    </ul>
-
-    <p><b>Faculty Development Programs Conducted</b></p>
-    <ul>
-      <li>Unified Approaches to Solving Differential Equations: From Classical Methods to Neural Networks (UniSDE-2025), Conducted by Department of Mathematics and Sc. Comp., NIT Hamirpur, Sponsored by E&amp;ICT Academy, PDPM IIITDM Jabalpur, during December 08–19, 2025</li>
-    </ul>
-
-    <p><b>Conferences Conducted</b></p>
-    <ul>
-      <li>4th International Conference on Nonlinear Applied Analysis and Optimization (ICNAAO 2024), NIT Hamirpur, 17–19 October 2024.</li>
-    </ul>
-
-    <p><b>Workshops Attended</b></p>
-    <ul>
-      <li>Indo-French Workshop on Innovative Numerical Methods, Department of Mathematics, IIT Roorkee, January 06–10, 2025.</li>
-    </ul>
-
-    <p><b>Conferences Attended</b></p>
-    <ul>
-      <li>15th Conference on Dynamical Systems Applied to Biology and Natural Sciences (DSABNS 2024), NOVA FCT, Universidade NOVA de Lisboa, Portugal, February 5–9, 2024.</li>
-    </ul>
-
-    <p><b>Expert Lectures Delivered</b></p>
-    <ul>
-      <li>Solutions of Some Differential Equations by Finite Element Method, FDP on Recent Techniques for the Solutions of Nonlinear Differential Equations, JIIT Noida, 23–28 August 2021.</li>
-      <li>The basics of MATLAB and its applications in data analysis, e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
-      <li>Research and Publication Ethics, e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
-    </ul>
   </details>
 
+  <!-- PUBLICATIONS -->
   <details class="section" id="publications">
     <summary><h2>Publications</h2></summary>
     <ol reversed>
@@ -334,31 +376,71 @@ nav a.active{
     </ol>
   </details>
 
+  <!-- PROJECTS -->
   <details class="section" id="projects">
     <summary><h2>Projects</h2></summary>
-    <p>
-      <b>Funded Research Project (Ongoing)</b><br>
-      <b>Title:</b>
-      <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i><br>
-      <b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India<br>
-      <b>Scheme:</b> ARG-MATRICS<br>
-      <b>Role:</b> Principal Investigator<br>
-      <b>Duration:</b> 5 years<br>
-      <b>Total Grant:</b> ₹30.00 Lakhs
-    </p>
+
+    <p class="sub-h">Funded Research Project (Ongoing)</p>
+    <ul>
+      <li><b>Title:</b> <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i></li>
+      <li><b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India</li>
+      <li><b>Scheme:</b> ARG-MATRICS</li>
+      <li><b>Role:</b> Principal Investigator</li>
+      <li><b>Duration:</b> 5 years</li>
+      <li><b>Total Grant:</b> ₹30.00 Lakhs</li>
+    </ul>
   </details>
 
+  <!-- ACTIVITIES (workshops + FDPs + conferences + talks) -->
+  <details class="section" id="activities">
+    <summary><h2>Activities</h2></summary>
+
+    <p class="sub-h">Workshops Conducted</p>
+    <ul>
+      <li>2nd Workshop on Applications of MATLAB in Engineering and Science, NIT Hamirpur, 15–19 December 2021.</li>
+      <li>e-Workshop on Applications of Financial Mathematics in Stock Market, NIT Hamirpur, 25–29 May 2022.</li>
+    </ul>
+
+    <p class="sub-h">Faculty Development Programs Conducted</p>
+    <ul>
+      <li>Unified Approaches to Solving Differential Equations: From Classical Methods to Neural Networks (UniSDE-2025), Department of Mathematics and Sc. Comp., NIT Hamirpur, sponsored by E&amp;ICT Academy, PDPM IIITDM Jabalpur, December 08–19, 2025.</li>
+    </ul>
+
+    <p class="sub-h">Conferences Conducted</p>
+    <ul>
+      <li>4th International Conference on Nonlinear Applied Analysis and Optimization (ICNAAO 2024), NIT Hamirpur, 17–19 October 2024.</li>
+    </ul>
+
+    <p class="sub-h">Workshops Attended</p>
+    <ul>
+      <li>Indo-French Workshop on Innovative Numerical Methods, Department of Mathematics, IIT Roorkee, January 06–10, 2025.</li>
+    </ul>
+
+    <p class="sub-h">Conferences Attended</p>
+    <ul>
+      <li>15th Conference on Dynamical Systems Applied to Biology and Natural Sciences (DSABNS 2024), NOVA FCT, Universidade NOVA de Lisboa, Portugal, February 5–9, 2024.</li>
+    </ul>
+
+    <p class="sub-h">Expert Lectures Delivered</p>
+    <ul>
+      <li>Solutions of Some Differential Equations by Finite Element Method — FDP on Recent Techniques for the Solutions of Nonlinear Differential Equations, JIIT Noida, 23–28 August 2021.</li>
+      <li>The basics of MATLAB and its applications in data analysis — e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
+      <li>Research and Publication Ethics — e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
+    </ul>
+  </details>
+
+  <!-- ADMINISTRATION -->
   <details class="section" id="administration">
     <summary><h2>Administration</h2></summary>
 
-    <p><b>Current Assignments</b></p>
+    <p class="sub-h">Current Assignments</p>
     <ul>
       <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
       <li>Faculty Incharge (NEP), NIT Hamirpur</li>
       <li>OIC, Examination &amp; Time Table</li>
     </ul>
 
-    <p><b>Previous Assignments</b></p>
+    <p class="sub-h">Previous Assignments</p>
     <ul>
       <li>Convener, Departmental Bachelor Programme Committee, DoMSC, NIT Hamirpur</li>
       <li>Deputy Center Incharge CCMT/CCMN 2024 (Admissions), NIT Hamirpur</li>
@@ -371,6 +453,7 @@ nav a.active{
     </ul>
   </details>
 
+  <!-- CONTACT -->
   <details class="section" id="contact">
     <summary><h2>Contact</h2></summary>
     <ul>
@@ -388,130 +471,53 @@ nav a.active{
   </div>
 </footer>
 
-
-<!-- Segmented scroll indicator 
-<div class="scroll-indicator" aria-hidden="true">
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
- -->
-  
 <script>
-  // footer year
+  // Footer year
   document.getElementById("y").textContent = new Date().getFullYear();
 
-  // segmented scroll indicator
-  (function () {
-    const bars = document.querySelectorAll('.scroll-indicator span');
-    const totalBars = bars.length;
-
-    function updateIndicator() {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-
-      let activeIndex = Math.floor(progress * totalBars);
-      if (activeIndex >= totalBars) activeIndex = totalBars - 1;
-
-      bars.forEach((bar, i) => {
-        bar.classList.toggle('active', i === activeIndex);
-      });
-    }
-
-    window.addEventListener('scroll', updateIndicator, { passive: true });
-    window.addEventListener('resize', updateIndicator);
-    updateIndicator();
-  })();
-
-  // accordion behavior (only one open at a time)
-  // smooth open/close for each details section (no auto-collapsing others)
-document.querySelectorAll('details.section').forEach((details) => {
-  const content = details.querySelector('.details-content');
-  if (!content) return;
-
-  // initial state
-  content.style.height = details.open ? 'auto' : '0px';
-
-  details.addEventListener('toggle', () => {
-    // stop previous transition
-    content.style.transition = 'none';
-
-    if (details.open) {
-      // opening: 0 -> full height
-      content.style.height = '0px';
-      const full = content.scrollHeight;
-
-      requestAnimationFrame(() => {
-        content.style.transition = 'height 220ms ease';
-        content.style.height = full + 'px';
-      });
-
-      // after animation, let it auto-size
-      setTimeout(() => {
-        if (details.open) content.style.height = 'auto';
-      }, 240);
-    } else {
-      // closing: full -> 0
-      const full = content.scrollHeight;
-      content.style.height = full + 'px';
-
-      requestAnimationFrame(() => {
-        content.style.transition = 'height 220ms ease';
-        content.style.height = '0px';
-      });
-    }
-  });
-});
-<script>
+  // Active nav highlighting on scroll
   const navLinks = document.querySelectorAll("nav a");
   const sections = document.querySelectorAll("details.section");
 
   function updateActiveNav() {
     let current = "";
-
     sections.forEach(section => {
       const rect = section.getBoundingClientRect();
-
       if (rect.top <= 120 && rect.bottom >= 120) {
         current = section.id;
       }
     });
-
     navLinks.forEach(link => {
-      link.classList.remove("active");
-
-      if (link.getAttribute("href") === "#" + current) {
-        link.classList.add("active");
-      }
+      link.classList.toggle("active", link.getAttribute("href") === "#" + current);
     });
   }
 
   window.addEventListener("scroll", updateActiveNav, { passive: true });
   window.addEventListener("resize", updateActiveNav);
   updateActiveNav();
-</script>
-  // ensure nav clicks / hash open the correct section even if it is collapsed
+
+  // Open the correct section when navigated via hash (from link or direct URL)
   function openFromHash() {
-    const id = (location.hash || '').replace('#', '');
+    const id = (location.hash || "").replace("#", "");
     if (!id) return;
     const target = document.getElementById(id);
-    if (target && target.tagName.toLowerCase() === 'details') {
-      target.setAttribute('open', '');
-      // optional: bring the summary nicely into view after it opens
-      const summary = target.querySelector('summary');
-      if (summary) summary.scrollIntoView({ block: 'start' });
+    if (target && target.tagName.toLowerCase() === "details") {
+      target.setAttribute("open", "");
+      const summary = target.querySelector("summary");
+      if (summary) summary.scrollIntoView({ block: "start", behavior: "smooth" });
     }
   }
-  window.addEventListener('hashchange', openFromHash);
+  window.addEventListener("hashchange", openFromHash);
   openFromHash();
+
+  // Clicking a nav link should always open the target section (even if collapsed)
+  navLinks.forEach(link => {
+    link.addEventListener("click", () => {
+      const id = link.getAttribute("href").replace("#", "");
+      const target = document.getElementById(id);
+      if (target) target.setAttribute("open", "");
+    });
+  });
 </script>
 
 </body>

@@ -116,15 +116,18 @@
       text-decoration:none;
     }
     nav a.active{
-      color:#fff;
-      background:linear-gradient(135deg, var(--accent), #14b8a6);
-      border-color:rgba(255,255,255,0.4);
+      color:var(--text);
+      background:linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62));
+      border-color:rgba(255,255,255,0.95);
+      backdrop-filter:blur(14px) saturate(170%);
+      -webkit-backdrop-filter:blur(14px) saturate(170%);
       box-shadow:
-        0 4px 14px rgba(15,118,110,0.35),
-        0 1px 0 rgba(255,255,255,0.4) inset;
+        0 8px 24px rgba(17,24,39,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.95),
+        inset 0 -1px 0 rgba(255,255,255,0.35);
     }
 
-    .hero{padding:26px 0 8px}
+    .hero{padding:26px 0 8px; scroll-margin-top:72px}
     .name{font-size:30px; margin:0; letter-spacing:-0.01em}
     .subtitle{margin:6px 0 0; color:var(--muted)}
     .meta{margin:10px 0 0; color:var(--muted); font-size:14px}
@@ -232,19 +235,16 @@
 <header>
   <div class="wrap">
     <nav aria-label="Main navigation">
+      <a href="#home">Home</a>
       <a href="#academic">Academic</a>
       <a href="#teaching">Teaching</a>
       <a href="#research">Research</a>
-      <a href="#publications">Publications</a>
-      <a href="#projects">Projects</a>
       <a href="#activities">Activities</a>
-      <a href="#administration">Administration</a>
-      <a href="#contact">Contact</a>
     </nav>
   </div>
 </header>
 
-<div class="wrap hero hero-flex">
+<section class="wrap hero hero-flex" id="home">
   <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
     <p class="subtitle">Assistant Professor</p>
@@ -254,7 +254,7 @@
   </div>
 
   <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="130" height="150" />
-</div>
+</section>
 
 <main class="wrap">
 
@@ -316,7 +316,7 @@
     </ul>
   </details>
 
-  <!-- RESEARCH (supervision + interests only) -->
+  <!-- RESEARCH -->
   <details class="section" id="research">
     <summary><h2>Research</h2></summary>
 
@@ -326,6 +326,16 @@
       <li>Numerical Analysis</li>
       <li>Finite difference methods</li>
       <li>Physics Informed Neural Networks</li>
+    </ul>
+
+    <p class="sub-h">Funded Research Project</p>
+    <ul>
+      <li><b>Title:</b> <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i></li>
+      <li><b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India</li>
+      <li><b>Scheme:</b> ARG-MATRICS</li>
+      <li><b>Role:</b> Principal Investigator</li>
+      <li><b>Duration:</b> 5 years</li>
+      <li><b>Total Grant:</b> ₹30.00 Lakhs</li>
     </ul>
 
     <p class="sub-h">Ph.D. Supervision</p>
@@ -348,11 +358,8 @@
       <li>Arman Shukla (21BMA009), Mrigesh Thakur (21BMA010), Maanas Sood (21BMA013), Dharuva Thakur (21BMA016), Adaptive Strategy Selection Framework Using Hidden Markov Models for Market Regime Detection, 2025.</li>
       <li>Yachna Arora (21BMA008), Gaganpreet Kaur (21BMA032), Komal (21BMA035), Multi-Object Detection and Motion Tracking for Assistive Technology, 2025.</li>
     </ol>
-  </details>
 
-  <!-- PUBLICATIONS -->
-  <details class="section" id="publications">
-    <summary><h2>Publications</h2></summary>
+    <p class="sub-h">Selected Publications</p>
     <ol reversed>
       <li>Sanjalee Maheshwari, YD Sharma, OP Yadav, Ankita Bisht “Effect of Inclined Magnetic Field on Thermal Instability of Internally Heated Bi‐Viscous Bingham Nanofluid Layer.” <i>ZAMM‐Journal of Applied Mathematics and Mechanics/Zeitschrift für Angewandte Mathematik und Mechanik</i>, Vol. 106(4), pp. e70405, April 2026.</li>
       <li>Anisha Devi, O.P. Yadav. “A numerical study of the generalized FitzHugh-Nagumo equation using a higher order Galerkin finite element method.” <i>Computational Mathematics and Mathematical Physics</i>, Vol. 65, pp. 629–648, April 2025.</li>
@@ -377,22 +384,7 @@
     </ol>
   </details>
 
-  <!-- PROJECTS -->
-  <details class="section" id="projects">
-    <summary><h2>Projects</h2></summary>
-
-    <p class="sub-h">Funded Research Project (Ongoing)</p>
-    <ul>
-      <li><b>Title:</b> <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i></li>
-      <li><b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India</li>
-      <li><b>Scheme:</b> ARG-MATRICS</li>
-      <li><b>Role:</b> Principal Investigator</li>
-      <li><b>Duration:</b> 5 years</li>
-      <li><b>Total Grant:</b> ₹30.00 Lakhs</li>
-    </ul>
-  </details>
-
-  <!-- ACTIVITIES (workshops + FDPs + conferences + talks) -->
+  <!-- ACTIVITIES -->
   <details class="section" id="activities">
     <summary><h2>Activities</h2></summary>
 
@@ -428,12 +420,8 @@
       <li>The basics of MATLAB and its applications in data analysis — e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
       <li>Research and Publication Ethics — e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
     </ul>
-  </details>
 
-  <!-- ADMINISTRATION -->
-  <details class="section" id="administration">
-    <summary><h2>Administration</h2></summary>
-
+    <p class="sub-h">Administrative Responsibilities</p>
     <p class="sub-h">Current Assignments</p>
     <ul>
       <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
@@ -454,16 +442,6 @@
     </ul>
   </details>
 
-  <!-- CONTACT -->
-  <details class="section" id="contact">
-    <summary><h2>Contact</h2></summary>
-    <ul>
-      <li><b>Department:</b> Department of Mathematics &amp; Scientific Computing, NIT Hamirpur - 177005</li>
-      <li><b>Phone:</b> 01972-254108</li>
-      <li><b>Email:</b> <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></li>
-    </ul>
-  </details>
-
 </main>
 
 <footer>
@@ -478,10 +456,10 @@
 
   // Active nav highlighting on scroll
   const navLinks = document.querySelectorAll("nav a");
-  const sections = document.querySelectorAll("details.section");
+  const sections = document.querySelectorAll("#home, details.section");
 
   function updateActiveNav() {
-    let current = "";
+    let current = "home";
     sections.forEach(section => {
       const rect = section.getBoundingClientRect();
       if (rect.top <= 120 && rect.bottom >= 120) {
@@ -516,7 +494,9 @@
     link.addEventListener("click", () => {
       const id = link.getAttribute("href").replace("#", "");
       const target = document.getElementById(id);
-      if (target) target.setAttribute("open", "");
+      if (target && target.tagName.toLowerCase() === "details") {
+        target.setAttribute("open", "");
+      }
     });
   });
 </script>

@@ -26,10 +26,15 @@
   <meta name="twitter:description" content="Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur." />
   <meta name="twitter:image" content="profile.jpeg" />
 
-  <!-- Favicon (optional — replace with your own if you have one) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/jpeg" href="profile.jpeg" />
 
-  <!-- Structured data: helps Google show a rich knowledge-style card -->
+  <!-- Google Fonts: scholarly serif + clean sans for body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Structured data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -75,168 +80,374 @@
 
   <style>
     :root{
-      --bg:#ffffff; --text:#111827; --muted:#4b5563; --line:#e5e7eb;
-      --card:#f9fafb; --link:#1d4ed8; --accent:#0f766e; --accent-soft:#ecfdf5;
+      /* Scholarly palette: deep navy, burgundy accent, warm cream */
+      --bg: #fbfaf6;            /* warm parchment */
+      --bg-alt: #f5f1e8;        /* deeper cream */
+      --text: #1a2238;          /* deep navy ink */
+      --muted: #4a5468;
+      --line: #d9d2c2;          /* warm rule */
+      --line-soft: #e8e2d4;
+      --card: #ffffff;
+      --link: #6b1f2c;          /* burgundy */
+      --link-hover: #8b2a3a;
+      --accent: #6b1f2c;        /* burgundy */
+      --accent-2: #b08a3e;      /* antique gold */
+      --navy: #1a2238;
       --max: 980px;
+
+      --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+      --display: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+      --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
     }
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;}
-    body{margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg); line-height:1.65}
-    a{color:var(--link); text-decoration:none}
-    a:hover{text-decoration:underline}
-    .wrap{max-width:var(--max); margin:0 auto; padding:0 18px}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color:var(--text);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(176,138,62,0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 100%, rgba(107,31,44,0.04) 0%, transparent 40%),
+        var(--bg);
+      line-height:1.7;
+      font-size: 16px;
+    }
+    a{color:var(--link); text-decoration:none; transition:color .2s ease}
+    a:hover{color:var(--link-hover); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px}
+    .wrap{max-width:var(--max); margin:0 auto; padding:0 22px}
 
-    /* Glassy sticky header */
+    /* Top accent bar — academic crest feel */
+    .top-bar{
+      height:5px;
+      background: linear-gradient(90deg,
+        var(--navy) 0%, var(--navy) 33%,
+        var(--accent-2) 33%, var(--accent-2) 66%,
+        var(--accent) 66%, var(--accent) 100%);
+    }
+
+    /* Header */
     header{
       position:sticky; top:0;
-      background:linear-gradient(135deg, rgba(255,255,255,0.65), rgba(255,255,255,0.4));
-      backdrop-filter: blur(18px) saturate(180%);
-      -webkit-backdrop-filter: blur(18px) saturate(180%);
-      border-bottom:1px solid rgba(255,255,255,0.35);
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.6) inset,
-        0 8px 24px rgba(17,24,39,0.06);
+      background: rgba(251, 250, 246, 0.88);
+      backdrop-filter: blur(14px) saturate(160%);
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      border-bottom:1px solid var(--line);
+      box-shadow: 0 4px 20px rgba(26,34,56,0.04);
       z-index:10;
     }
-    nav{display:flex; gap:6px; flex-wrap:wrap; padding:12px 0}
-    nav a{
-      font-size:14px;
-      color:var(--muted);
-      padding:6px 12px;
-      border-radius:999px;
-      transition:all .2s ease;
-      border:1px solid transparent;
+    nav{
+      display:flex;
+      gap:4px;
+      flex-wrap:wrap;
+      padding:14px 0;
+      align-items:center;
     }
-    nav a:hover{
-      background:rgba(255,255,255,0.6);
+    .brand-mark{
+      font-family: var(--display);
+      font-weight:600;
+      font-size:18px;
+      color:var(--navy);
+      letter-spacing:0.02em;
+      margin-right:auto;
+      padding-right:12px;
+    }
+    .brand-mark span{ color:var(--accent); }
+    nav a:not(.brand-mark){
+      font-family: var(--sans);
+      font-size:13.5px;
+      font-weight:500;
+      letter-spacing:0.03em;
+      text-transform:uppercase;
+      color:var(--muted);
+      padding:7px 14px;
+      border-radius:3px;
+      transition:all .2s ease;
+      border-bottom:2px solid transparent;
+    }
+    nav a:not(.brand-mark):hover{
       color:var(--accent);
-      border-color:rgba(255,255,255,0.7);
-      backdrop-filter:blur(6px);
-      -webkit-backdrop-filter:blur(6px);
       text-decoration:none;
+      border-bottom-color:var(--accent-2);
     }
     nav a.active{
-      color:var(--text);
-      background:linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.62));
-      border-color:rgba(255,255,255,0.95);
-      backdrop-filter:blur(14px) saturate(170%);
-      -webkit-backdrop-filter:blur(14px) saturate(170%);
-      box-shadow:
-        0 8px 24px rgba(17,24,39,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.95),
-        inset 0 -1px 0 rgba(255,255,255,0.35);
+      color:var(--navy);
+      border-bottom-color:var(--accent);
     }
 
-    .hero{padding:26px 0 8px; scroll-margin-top:72px}
-    .name{font-size:30px; margin:0; letter-spacing:-0.01em}
-    .subtitle{margin:6px 0 0; color:var(--muted)}
-    .meta{margin:10px 0 0; color:var(--muted); font-size:14px}
-    main{padding:18px 0 46px}
-    h2{font-size:18px; margin:0 0 10px}
-    ul{margin:8px 0 0 18px; padding:0}
-    li{margin:6px 0}
-    .grid{display:grid; grid-template-columns:1fr; gap:14px}
+    /* HERO */
+    .hero{
+      padding:42px 0 24px;
+      scroll-margin-top:80px;
+      position:relative;
+    }
+    .hero::after{
+      content:"";
+      display:block;
+      width:80px;
+      height:1px;
+      background:var(--accent-2);
+      margin-top:24px;
+    }
+    .name{
+      font-family: var(--display);
+      font-weight:600;
+      font-size: clamp(32px, 5vw, 44px);
+      margin:0;
+      letter-spacing:-0.005em;
+      color:var(--navy);
+      line-height:1.15;
+    }
+    .name::after{
+      content:"";
+      display:block;
+      width:50px;
+      height:2px;
+      background:var(--accent);
+      margin-top:14px;
+      margin-bottom:14px;
+    }
+    .subtitle{
+      margin:4px 0 0;
+      color:var(--text);
+      font-family: var(--serif);
+      font-size:18px;
+      font-style:italic;
+    }
+    .subtitle.dept{
+      font-style:normal;
+      color:var(--muted);
+      font-size:16px;
+      font-family: var(--sans);
+    }
+    .meta{
+      margin:14px 0 0;
+      color:var(--muted);
+      font-size:14px;
+      font-family: var(--sans);
+    }
+    .meta a{ font-weight:500; }
+
+    main{padding:8px 0 50px}
+
+    /* Section headings (h2) */
+    h2{
+      font-family: var(--display);
+      font-size:26px;
+      font-weight:600;
+      margin:0 0 12px;
+      color:var(--navy);
+      letter-spacing:0.005em;
+    }
+
+    ul{margin:10px 0 0 20px; padding:0}
+    li{margin:7px 0; font-family: var(--serif); font-size:17px; line-height:1.6}
+    ol{margin:10px 0 0 22px; padding:0}
+    ol li{ font-family: var(--serif); font-size:17px; line-height:1.65; padding-left:4px; }
+
+    /* Grid for overview + quick links */
+    .grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:8px}
     .card{
       background:var(--card);
       border:1px solid var(--line);
-      border-radius:12px;
-      padding:14px;
-      transition:border-color .2s ease, box-shadow .2s ease;
+      border-radius:6px;
+      padding:22px 24px;
+      position:relative;
+      transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+      box-shadow: 0 1px 2px rgba(26,34,56,0.03);
+    }
+    .card::before{
+      content:"";
+      position:absolute;
+      top:0; left:0;
+      width:3px; height:100%;
+      background:var(--accent);
+      border-radius:6px 0 0 6px;
+      opacity:0.85;
     }
     .card:hover{
-      border-color:#d1d5db;
-      box-shadow:0 2px 12px rgba(0,0,0,.04);
+      border-color:var(--accent-2);
+      box-shadow: 0 6px 24px rgba(26,34,56,0.08);
+      transform:translateY(-1px);
     }
-    .small{font-size:14px; color:var(--muted)}
-    ol{margin:8px 0 0 20px; padding:0}
-    footer{border-top:1px solid var(--line); padding:16px 0; color:var(--muted); font-size:13px; margin-top:20px}
+    .overview-card h2{ margin-bottom:10px; }
+    .overview-card p{
+      font-family: var(--serif);
+      font-size:17.5px;
+      line-height:1.75;
+      color:var(--text);
+      margin:0;
+      text-align:justify;
+      hyphens:auto;
+    }
+    .overview-card p::first-letter{
+      font-family: var(--display);
+      font-size: 1.15em;
+      font-weight:600;
+      color: var(--accent);
+    }
+    .quicklinks-card ul{ margin-left:18px; }
+    .quicklinks-card li{ font-size:16px; }
 
+    .small{font-size:14px; color:var(--muted)}
+
+    /* HERO LAYOUT */
     .hero-flex{
       display:flex;
       align-items:flex-start;
-      gap:clamp(24px, 8vw, 150px);
+      gap:clamp(24px, 7vw, 100px);
     }
-    .hero-text{ max-width:780px; }
+    .hero-text{ max-width:780px; flex:1; }
     .hero-photo{
-      width:130px; height:150px;
+      width:140px;
+      height:170px;
       object-fit:cover;
-      border-radius:12px;
+      border-radius:4px;
       border:1px solid var(--line);
-      margin-top:4px;
-      box-shadow:0 4px 16px rgba(0,0,0,.06);
+      margin-top:6px;
+      box-shadow:
+        0 4px 18px rgba(26,34,56,0.12),
+        0 0 0 6px var(--bg),
+        0 0 0 7px var(--line);
+      filter:saturate(0.95);
     }
 
-    .overview-card{ padding:12px 14px; }
-    .overview-card p{ font-size:15px; color:var(--muted); margin-bottom:0; }
-
-    /* Collapsible sections */
+    /* Collapsible sections — academic feel with ornamental marker */
     details.section{
-      padding:18px 0;
+      padding:26px 0 22px;
       border-top:1px solid var(--line);
-      scroll-margin-top:70px;
+      scroll-margin-top:80px;
+      position:relative;
     }
+    details.section:first-of-type{ margin-top:18px; }
+
     details.section > summary{
       list-style:none;
       cursor:pointer;
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:14px;
       user-select:none;
-      margin:0 0 10px;
+      margin:0 0 4px;
       outline:none;
-      border-radius:6px;
-      padding:4px 0;
+      border-radius:4px;
+      padding:6px 0;
     }
     details.section > summary::-webkit-details-marker{ display:none; }
     details.section > summary h2{
       margin:0;
-      font-size:18px;
-      color:var(--text);
+      transition:color .2s ease;
     }
     details.section > summary::before{
-      content:"";
-      width:4px; height:18px;
-      background:var(--accent);
-      border-radius:2px;
-      display:inline-block;
+      content:"§";
+      font-family: var(--display);
+      font-size:28px;
+      color:var(--accent);
+      font-weight:600;
+      line-height:1;
+      transition:color .2s ease, transform .3s ease;
     }
     details.section > summary::after{
-      content:"▾";
+      content:"+";
       margin-left:auto;
       color:var(--muted);
-      transition:transform .2s ease;
+      font-size:22px;
+      font-weight:300;
+      transition:transform .25s ease, color .2s ease;
+      font-family: var(--sans);
     }
-    details.section:not([open]) > summary::after{
-      transform:rotate(-90deg);
+    details.section[open] > summary::after{
+      content:"−";
+      color:var(--accent);
     }
     details.section[open] > summary h2{ color:var(--accent); }
-    details.section:not([open]){ padding-bottom:10px; }
+    details.section[open] > summary::before{
+      color:var(--accent-2);
+      transform:rotate(8deg);
+    }
+    details.section:not([open]){ padding-bottom:18px; }
 
     /* Subsection headings inside details */
     .sub-h{
+      font-family: var(--display);
       font-weight:600;
-      color:var(--text);
-      margin:14px 0 4px;
-      font-size:15px;
+      color:var(--navy);
+      margin:22px 0 6px;
+      font-size:19px;
+      letter-spacing:0.01em;
+      position:relative;
+      padding-bottom:4px;
+      border-bottom:1px dotted var(--line);
+      display:inline-block;
+      padding-right:16px;
     }
-    .sub-h:first-child{ margin-top:0; }
+    .sub-h:first-child{ margin-top:6px; }
+
+    /* Publications: refined ordered list */
+    details.section ol[reversed] li{
+      padding:6px 0 6px 6px;
+      border-bottom:1px solid var(--line-soft);
+    }
+    details.section ol[reversed] li:last-child{ border-bottom:none; }
+    details.section ol[reversed] li i{
+      color:var(--accent);
+      font-style:italic;
+    }
+
+    /* Footer */
+    footer{
+      border-top:1px solid var(--line);
+      padding:24px 0 26px;
+      color:var(--muted);
+      font-size:13px;
+      margin-top:30px;
+      background:var(--bg-alt);
+      position:relative;
+    }
+    footer::before{
+      content:"";
+      display:block;
+      position:absolute;
+      top:-1px; left:50%;
+      transform:translateX(-50%);
+      width:80px;
+      height:3px;
+      background:var(--accent-2);
+    }
+    footer .wrap{ text-align:center; font-family: var(--serif); font-style:italic; }
+
+    /* Decorative divider used between hero and main grid (optional) */
+    .ornament{
+      text-align:center;
+      color:var(--accent-2);
+      font-size:22px;
+      margin:18px 0 6px;
+      letter-spacing:8px;
+      font-family: var(--display);
+    }
 
     @media (max-width: 768px){
-      .hero-flex{ flex-direction:column; gap:12px; }
-      .name{ font-size:26px; }
+      .hero-flex{ flex-direction:column-reverse; gap:16px; align-items:flex-start; }
+      .hero-photo{ width:120px; height:150px; }
+      h2{ font-size:22px; }
+      li, ol li{ font-size:16px; }
+      .overview-card p{ font-size:16.5px; }
+      .brand-mark{ font-size:15px; }
+      nav a:not(.brand-mark){ padding:6px 10px; font-size:12.5px; }
     }
     @media (min-width: 800px){
-      .grid{grid-template-columns: 0.9fr auto}
+      .grid{grid-template-columns: 1.4fr 1fr}
     }
   </style>
 </head>
 <body>
 
+<div class="top-bar" aria-hidden="true"></div>
+
 <header>
   <div class="wrap">
     <nav aria-label="Main navigation">
+      <a href="#home" class="brand-mark">Dr. O. P. <span>Yadav</span></a>
       <a href="#home">Home</a>
-      <a href="#academic">Academic</a>
       <a href="#teaching">Teaching</a>
       <a href="#research">Research</a>
       <a href="#activities">Activities</a>
@@ -248,15 +459,17 @@
   <div class="hero-text">
     <h1 class="name">Dr. Om Prakash Yadav</h1>
     <p class="subtitle">Assistant Professor</p>
-    <p class="subtitle">Department of Mathematics &amp; Scientific Computing</p>
-    <p class="subtitle">National Institute of Technology Hamirpur (H.P.)</p>
-    <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a></p>
+    <p class="subtitle dept">Department of Mathematics &amp; Scientific Computing</p>
+    <p class="subtitle dept">National Institute of Technology Hamirpur (H.P.)</p>
+    <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a> &nbsp;·&nbsp; Tel: +91-1972-254108</p>
   </div>
 
-  <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="130" height="150" />
+  <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="140" height="170" />
 </section>
 
 <main class="wrap">
+
+  <div class="ornament" aria-hidden="true">❦ ❦ ❦</div>
 
   <div class="grid">
     <div class="card overview-card">
@@ -266,7 +479,7 @@
       </p>
     </div>
 
-    <div class="card overview-card">
+    <div class="card overview-card quicklinks-card">
       <h2>Quick Links</h2>
       <ul>
         <li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></li>
@@ -279,9 +492,9 @@
     </div>
   </div>
 
-  <!-- ACADEMIC -->
-  <details class="section" id="academic" open>
-    <summary><h2>Academic</h2></summary>
+  <!-- EDUCATION (was Academic) -->
+  <details class="section" id="education" open>
+    <summary><h2>Education</h2></summary>
     <ul>
       <li>B.Sc. from University of Allahabad (2009).</li>
       <li>M.Sc. from IIT Kanpur (2011).</li>
@@ -421,15 +634,14 @@
       <li>Research and Publication Ethics — e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
     </ul>
 
-    <p class="sub-h">Administrative Responsibilities</p>
-    <p class="sub-h">Current Assignments</p>
+    <p class="sub-h">Administrative Responsibilities — Current</p>
     <ul>
       <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
       <li>Faculty Incharge (NEP), NIT Hamirpur</li>
       <li>OIC, Examination &amp; Time Table</li>
     </ul>
 
-    <p class="sub-h">Previous Assignments</p>
+    <p class="sub-h">Administrative Responsibilities — Previous</p>
     <ul>
       <li>Convener, Departmental Bachelor Programme Committee, DoMSC, NIT Hamirpur</li>
       <li>Deputy Center Incharge CCMT/CCMN 2024 (Admissions), NIT Hamirpur</li>
@@ -455,14 +667,14 @@
   document.getElementById("y").textContent = new Date().getFullYear();
 
   // Active nav highlighting on scroll
-  const navLinks = document.querySelectorAll("nav a");
+  const navLinks = document.querySelectorAll("nav a:not(.brand-mark)");
   const sections = document.querySelectorAll("#home, details.section");
 
   function updateActiveNav() {
     let current = "home";
     sections.forEach(section => {
       const rect = section.getBoundingClientRect();
-      if (rect.top <= 120 && rect.bottom >= 120) {
+      if (rect.top <= 130 && rect.bottom >= 130) {
         current = section.id;
       }
     });
@@ -475,7 +687,7 @@
   window.addEventListener("resize", updateActiveNav);
   updateActiveNav();
 
-  // Open the correct section when navigated via hash (from link or direct URL)
+  // Open the correct section when navigated via hash
   function openFromHash() {
     const id = (location.hash || "").replace("#", "");
     if (!id) return;
@@ -489,7 +701,7 @@
   window.addEventListener("hashchange", openFromHash);
   openFromHash();
 
-  // Clicking a nav link should always open the target section (even if collapsed)
+  // Clicking a nav link should always open the target section
   navLinks.forEach(link => {
     link.addEventListener("click", () => {
       const id = link.getAttribute("href").replace("#", "");

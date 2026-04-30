@@ -1,717 +1,2079 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+import os
+import sqlite3
+from datetime import datetime
+from functools import wraps
+from flask import (
+    Flask, request, redirect, render_template_string,
+    url_for, send_from_directory, session, flash
+)
+from werkzeug.utils import secure_filename
 
-  <!-- Primary SEO -->
-  <title>Dr. Om Prakash Yadav | Assistant Professor, Mathematics, NIT Hamirpur | FEM, Numerical Analysis, PINNs</title>
-  <meta name="description" content="Dr. Om Prakash Yadav — Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur. Research in finite element methods, numerical analysis of PDEs, reaction–diffusion models, and physics-informed neural networks (PINNs)." />
-  <meta name="keywords" content="Om Prakash Yadav, Dr Om Prakash Yadav, NIT Hamirpur Mathematics, Assistant Professor NIT Hamirpur, Finite Element Method, FEM, Numerical Analysis, Reaction Diffusion Equations, Physics Informed Neural Networks, PINNs, Applied Mathematics India, IIT Roorkee PhD, Department of Mathematics and Scientific Computing" />
-  <meta name="author" content="Dr. Om Prakash Yadav" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://opyadav-nith.github.io/" />
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB = os.path.join(BASE_DIR, "supplementary.db")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+ALLOWED_EXTENSIONS = {"pdf", "png", "jpg", "jpeg"}
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="profile" />
-  <meta property="og:title" content="Dr. Om Prakash Yadav — Assistant Professor, NIT Hamirpur" />
-  <meta property="og:description" content="Academic profile: research in FEM, numerical analysis of PDEs, reaction–diffusion models and PINNs. Teaching, publications, projects and administration at NIT Hamirpur." />
-  <meta property="og:image" content="profile.jpeg" />
-  <meta property="profile:first_name" content="Om Prakash" />
-  <meta property="profile:last_name" content="Yadav" />
+# ---------------------------------------------------------------------------
+# Demo credentials. In production, replace with a proper user table + hashing.
+# ---------------------------------------------------------------------------
+ADMIN_USERS = {
+    "admin": "admin123",
+    "dean":  "dean123",
+}
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Dr. Om Prakash Yadav — NIT Hamirpur" />
-  <meta name="twitter:description" content="Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur." />
-  <meta name="twitter:image" content="profile.jpeg" />
+DEPARTMENTS = [
+    "Computer Science & Engineering",
+    "Civil Engineering",
+    "Chemical Engineering",
+    "Electronics & Communication Engineering",
+    "Electrical Engineering",
+    "Mechanical Engineering",
+    "Material Science & Engineering",
+    "Chemistry",
+    "Mathematics & Scientific Computing",
+    "Physics & Photonics Science",
+    "Architecture",
+    "Humanities & Social Sciences",
+    "Management Studies",
+    "Centre For Energy Studies",
+]
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/jpeg" href="profile.jpeg" />
+# Sample date sheet — replace with the real schedule when available.
+DATE_SHEET = [
+    {"date": "15 May 2026", "day": "Friday",   "session": "Forenoon (10:00 - 13:00)", "course": "MA101 - Calculus I"},
+    {"date": "15 May 2026", "day": "Friday",   "session": "Afternoon (14:00 - 17:00)", "course": "PH101 - Mechanics & Thermodynamics"},
+    {"date": "16 May 2026", "day": "Saturday", "session": "Forenoon (10:00 - 13:00)", "course": "CH101 - Chemistry I"},
+    {"date": "17 May 2026", "day": "Sunday",   "session": "Forenoon (10:00 - 13:00)", "course": "CS101 - Intro to Computing"},
+    {"date": "18 May 2026", "day": "Monday",   "session": "Afternoon (14:00 - 17:00)", "course": "EE101 - Basic Electrical Engg"},
+    {"date": "19 May 2026", "day": "Tuesday",  "session": "Forenoon (10:00 - 13:00)", "course": "ME101 - Engineering Mechanics"},
+]
 
-  <!-- Google Fonts: scholarly serif + clean sans for body -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+IMPORTANT_DATES = [
+    {"event": "Form availability begins",         "date": "01 May 2026"},
+    {"event": "Last date to submit form (no fine)", "date": "10 May 2026"},
+    {"event": "Last date with late fee",            "date": "12 May 2026"},
+    {"event": "Date sheet published",               "date": "13 May 2026"},
+    {"event": "Examinations commence",              "date": "15 May 2026"},
+    {"event": "Result declaration (tentative)",     "date": "10 Jun 2026"},
+]
 
-  <!-- Structured data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Dr. Om Prakash Yadav",
-    "givenName": "Om Prakash",
-    "familyName": "Yadav",
-    "honorificPrefix": "Dr.",
-    "jobTitle": "Assistant Professor",
-    "image": "profile.jpeg",
-    "email": "mailto:opyadav@nith.ac.in",
-    "telephone": "+91-1972-254108",
-    "worksFor": {
-      "@type": "CollegeOrUniversity",
-      "name": "National Institute of Technology Hamirpur",
-      "department": "Department of Mathematics & Scientific Computing",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Hamirpur",
-        "addressRegion": "Himachal Pradesh",
-        "postalCode": "177005",
-        "addressCountry": "IN"
-      }
-    },
-    "alumniOf": [
-      { "@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Roorkee" },
-      { "@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Kanpur" },
-      { "@type": "CollegeOrUniversity", "name": "University of Allahabad" }
-    ],
-    "knowsAbout": [
-      "Finite Element Method",
-      "Numerical Analysis",
-      "Partial Differential Equations",
-      "Reaction–Diffusion Equations",
-      "Physics Informed Neural Networks"
-    ],
-    "sameAs": [
-      "https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en",
-      "https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav"
-    ]
-  }
-  </script>
+app = Flask(__name__)
+app.secret_key = "change-this-secret-in-production"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-  <style>
-    :root{
-      /* Scholarly palette: deep navy, burgundy accent, warm cream */
-      --bg: #fbfaf6;            /* warm parchment */
-      --bg-alt: #f5f1e8;        /* deeper cream */
-      --text: #1a2238;          /* deep navy ink */
-      --muted: #4a5468;
-      --line: #d9d2c2;          /* warm rule */
-      --line-soft: #e8e2d4;
-      --card: #ffffff;
-      --link: #6b1f2c;          /* burgundy */
-      --link-hover: #8b2a3a;
-      --accent: #6b1f2c;        /* burgundy */
-      --accent-2: #b08a3e;      /* antique gold */
-      --navy: #1a2238;
-      --max: 980px;
 
-      --serif: 'EB Garamond', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-      --display: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
-      --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;}
-    body{
-      margin:0;
-      font-family: var(--sans);
-      color:var(--text);
-      background:
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def get_conn():
+    conn = sqlite3.connect(DB)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db():
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS applications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_name TEXT NOT NULL,
+            roll_no TEXT NOT NULL,
+            parent_dept TEXT NOT NULL,
+            fee INTEGER NOT NULL,
+            payment_reference TEXT,
+            receipt_filename TEXT,
+            receipt_original_name TEXT,
+            parent_verification_status TEXT NOT NULL DEFAULT 'Pending',
+            parent_verification_remarks TEXT,
+            parent_verified_by TEXT,
+            parent_verified_at TEXT,
+            created_at TEXT NOT NULL
+        )
+    """)
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS application_courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            application_id INTEGER NOT NULL,
+            course_code TEXT NOT NULL,
+            course_title TEXT NOT NULL,
+            course_dept TEXT NOT NULL,
+            FOREIGN KEY (application_id) REFERENCES applications (id)
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+init_db()
+
+
+# ---------------------------------------------------------------------------
+# Auth helpers
+# ---------------------------------------------------------------------------
+def student_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("student"):
+            flash("Please log in as a student to continue.", "warning")
+            return redirect(url_for("student_login"))
+        return f(*args, **kwargs)
+    return decorated
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("admin"):
+            flash("Please log in with administrator credentials.", "warning")
+            return redirect(url_for("admin_login"))
+        return f(*args, **kwargs)
+    return decorated
+
+
+# ===========================================================================
+# SHARED CSS — academic theme (navy / gold / maroon, serif headings)
+# ===========================================================================
+BASE_CSS = """
+:root {
+    /* Scholarly palette: deep navy ink, burgundy accent, antique gold, warm parchment */
+    --bg: #fbfaf6;            /* warm parchment */
+    --bg-alt: #f5f1e8;        /* deeper cream */
+    --paper: #ffffff;
+    --text: #1a2238;          /* deep navy ink */
+    --ink: #1a2238;
+    --muted: #4a5468;
+    --line: #d9d2c2;          /* warm rule */
+    --line-soft: #e8e2d4;
+    --border: #d9d2c2;        /* alias */
+    --navy: #1a2238;
+    --navy-dark: #0e1426;
+    --accent: #6b1f2c;        /* burgundy */
+    --accent-hover: #8b2a3a;
+    --maroon: #6b1f2c;        /* alias of accent */
+    --gold: #b08a3e;          /* antique gold */
+    --gold-light: #d4b577;
+    --cream: #fbfaf6;         /* alias */
+    --ok: #1f6e3a;
+    --warn: #a55a00;
+    --bad: #8b2a3a;
+
+    --serif:   'EB Garamond', Georgia, 'Times New Roman', serif;
+    --display: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --sans:    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+    font-family: var(--sans);
+    margin: 0;
+    color: var(--text);
+    background:
         radial-gradient(circle at 10% 0%, rgba(176,138,62,0.05) 0%, transparent 40%),
         radial-gradient(circle at 90% 100%, rgba(107,31,44,0.04) 0%, transparent 40%),
         var(--bg);
-      line-height:1.7;
-      font-size: 16px;
-    }
-    a{color:var(--link); text-decoration:none; transition:color .2s ease}
-    a:hover{color:var(--link-hover); text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px}
-    .wrap{max-width:var(--max); margin:0 auto; padding:0 22px}
+    line-height: 1.65;
+    font-size: 16px;
+}
+h1, h2, h3, h4 {
+    font-family: var(--display);
+    color: var(--navy);
+    margin-top: 0;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+}
+a { color: var(--accent); text-decoration: none; transition: color .2s ease; }
+a:hover { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 
-    /* Top accent bar — academic crest feel */
-    .top-bar{
-      height:5px;
-      background: linear-gradient(90deg,
+/* Top accent bar — academic crest stripe */
+.top-accent-bar {
+    height: 5px;
+    background: linear-gradient(90deg,
         var(--navy) 0%, var(--navy) 33%,
-        var(--accent-2) 33%, var(--accent-2) 66%,
+        var(--gold) 33%, var(--gold) 66%,
         var(--accent) 66%, var(--accent) 100%);
-    }
+}
 
-    /* Header */
-    header{
-      position:sticky; top:0;
-      background: rgba(251, 250, 246, 0.88);
-      backdrop-filter: blur(14px) saturate(160%);
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      border-bottom:1px solid var(--line);
-      box-shadow: 0 4px 20px rgba(26,34,56,0.04);
-      z-index:10;
-    }
-    nav{
-      display:flex;
-      gap:4px;
-      flex-wrap:wrap;
-      padding:14px 0;
-      align-items:center;
-    }
-    .brand-mark{
-      font-family: var(--display);
-      font-weight:600;
-      font-size:18px;
-      color:var(--navy);
-      letter-spacing:0.02em;
-      margin-right:auto;
-      padding-right:12px;
-    }
-    .brand-mark span{ color:var(--accent); }
-    nav a:not(.brand-mark){
-      font-family: var(--sans);
-      font-size:13.5px;
-      font-weight:500;
-      letter-spacing:0.03em;
-      text-transform:uppercase;
-      color:var(--muted);
-      padding:7px 14px;
-      border-radius:3px;
-      transition:all .2s ease;
-      border-bottom:2px solid transparent;
-    }
-    nav a:not(.brand-mark):hover{
-      color:var(--accent);
-      text-decoration:none;
-      border-bottom-color:var(--accent-2);
-    }
-    nav a.active{
-      color:var(--navy);
-      border-bottom-color:var(--accent);
-    }
+/* Top institute bar */
+.top-bar {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: #fff;
+    border-bottom: 1px solid var(--line);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+.top-bar .seal {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--navy-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 24px;
+    border: 3px solid var(--gold-light);
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+}
+.top-bar .titles h1 {
+    color: #fff; margin: 0; font-size: 22px;
+    font-weight: 600; letter-spacing: 0.01em;
+}
+.top-bar .titles p {
+    margin: 3px 0 0 0; color: var(--gold-light); font-size: 12px;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-family: var(--sans); font-weight: 500;
+}
+.top-bar .session-info {
+    margin-left: auto; text-align: right; font-size: 13px;
+    font-family: var(--sans);
+}
+.top-bar .session-info a {
+    color: var(--gold-light); text-decoration: none; font-weight: 500;
+}
+.top-bar .session-info a:hover { color: #fff; }
 
-    /* HERO */
-    .hero{
-      padding:42px 0 24px;
-      scroll-margin-top:80px;
-      position:relative;
-    }
-    .hero::after{
-      content:"";
-      display:block;
-      width:80px;
-      height:1px;
-      background:var(--accent-2);
-      margin-top:24px;
-    }
-    .name{
-      font-family: var(--display);
-      font-weight:600;
-      font-size: clamp(32px, 5vw, 44px);
-      margin:0;
-      letter-spacing:-0.005em;
-      color:var(--navy);
-      line-height:1.15;
-    }
-    .name::after{
-      content:"";
-      display:block;
-      width:50px;
-      height:2px;
-      background:var(--accent);
-      margin-top:14px;
-      margin-bottom:14px;
-    }
-    .subtitle{
-      margin:4px 0 0;
-      color:var(--text);
-      font-family: var(--serif);
-      font-size:18px;
-      font-style:italic;
-    }
-    .subtitle.dept{
-      font-style:normal;
-      color:var(--muted);
-      font-size:16px;
-      font-family: var(--sans);
-    }
-    .meta{
-      margin:14px 0 0;
-      color:var(--muted);
-      font-size:14px;
-      font-family: var(--sans);
-    }
-    .meta a{ font-weight:500; }
+/* Sub navigation */
+.sub-nav {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 40px;
+    display: flex; gap: 4px; flex-wrap: wrap;
+}
+.sub-nav a {
+    text-decoration: none;
+    padding: 7px 14px;
+    border-radius: 3px;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 2px solid transparent;
+    transition: all .2s ease;
+}
+.sub-nav a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--gold);
+    text-decoration: none;
+}
+.sub-nav a.active {
+    color: var(--navy);
+    border-bottom-color: var(--accent);
+}
 
-    main{padding:8px 0 50px}
+/* Page container */
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 30px;
+}
+.container.narrow { max-width: 760px; }
 
-    /* Section headings (h2) */
-    h2{
-      font-family: var(--display);
-      font-size:26px;
-      font-weight:600;
-      margin:0 0 12px;
-      color:var(--navy);
-      letter-spacing:0.005em;
-    }
+/* Cards / boxes */
+.box {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 22px 26px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(26, 34, 56, 0.03);
+    transition: border-color .25s ease, box-shadow .25s ease;
+}
+.box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    border-radius: 6px 0 0 6px;
+    opacity: 0.85;
+}
+.box:hover {
+    border-color: var(--gold);
+    box-shadow: 0 6px 24px rgba(26, 34, 56, 0.08);
+}
+.box + .box { margin-top: 22px; }
 
-    ul{margin:10px 0 0 20px; padding:0}
-    li{margin:7px 0; font-family: var(--serif); font-size:17px; line-height:1.6}
-    ol{margin:10px 0 0 22px; padding:0}
-    ol li{ font-family: var(--serif); font-size:17px; line-height:1.65; padding-left:4px; }
+.section-title {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+.section-title::before {
+    content: "\\00a7";  /* § sign */
+    font-family: var(--display);
+    font-size: 22px;
+    color: var(--accent);
+    font-weight: 600;
+    line-height: 1;
+}
+.section-title h2,
+.section-title h3 {
+    margin: 0;
+    font-family: var(--display);
+}
+.section-title .accent {
+    color: var(--accent); font-size: 11px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    font-family: var(--sans);
+    margin-left: auto;
+}
 
-    /* Grid for overview + quick links */
-    .grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:8px}
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:6px;
-      padding:22px 24px;
-      position:relative;
-      transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
-      box-shadow: 0 1px 2px rgba(26,34,56,0.03);
-    }
-    .card::before{
-      content:"";
-      position:absolute;
-      top:0; left:0;
-      width:3px; height:100%;
-      background:var(--accent);
-      border-radius:6px 0 0 6px;
-      opacity:0.85;
-    }
-    .card:hover{
-      border-color:var(--accent-2);
-      box-shadow: 0 6px 24px rgba(26,34,56,0.08);
-      transform:translateY(-1px);
-    }
-    .overview-card h2{ margin-bottom:10px; }
-    .overview-card p{
-      font-family: var(--serif);
-      font-size:17.5px;
-      line-height:1.75;
-      color:var(--text);
-      margin:0;
-      text-align:justify;
-      hyphens:auto;
-    }
-    .overview-card p::first-letter{
-      font-family: var(--display);
-      font-size: 1.15em;
-      font-weight:600;
-      color: var(--accent);
-    }
-    .quicklinks-card ul{ margin-left:18px; }
-    .quicklinks-card li{ font-size:16px; }
+/* Forms */
+label {
+    display: block; margin-top: 14px;
+    font-weight: 500; font-size: 12px; color: var(--navy);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: var(--sans);
+}
+input, select, textarea {
+    width: 100%; padding: 10px 12px; margin-top: 6px;
+    border: 1px solid var(--line); border-radius: 3px;
+    font-size: 15px; font-family: var(--sans); background: #fff;
+    color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(107, 31, 44, 0.10);
+}
+input[readonly] { background: var(--bg-alt); color: var(--muted); }
 
-    .small{font-size:14px; color:var(--muted)}
+/* Buttons */
+.btn, button {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--navy); color: #fff;
+    border: none; border-radius: 3px;
+    font-size: 12.5px; font-weight: 500; cursor: pointer;
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: var(--sans);
+    transition: background 0.15s, transform 0.05s;
+}
+.btn:hover, button:hover { background: var(--navy-dark); color: #fff; text-decoration: none; }
+.btn:active, button:active { transform: translateY(1px); }
+.btn-gold { background: var(--gold); color: var(--navy-dark); }
+.btn-gold:hover { background: var(--gold-light); color: var(--navy-dark); }
+.btn-maroon { background: var(--accent); }
+.btn-maroon:hover { background: var(--accent-hover); }
+.btn-ghost {
+    background: transparent; color: var(--accent);
+    border: 1px solid var(--accent);
+}
+.btn-ghost:hover { background: var(--accent); color: #fff; }
+.btn-sm { padding: 5px 11px; font-size: 11px; }
 
-    /* HERO LAYOUT */
-    .hero-flex{
-      display:flex;
-      align-items:flex-start;
-      gap:clamp(24px, 7vw, 100px);
-    }
-    .hero-text{ max-width:780px; flex:1; }
-    .hero-photo{
-      width:140px;
-      height:170px;
-      object-fit:cover;
-      border-radius:4px;
-      border:1px solid var(--line);
-      margin-top:6px;
-      box-shadow:
-        0 4px 18px rgba(26,34,56,0.12),
-        0 0 0 6px var(--bg),
-        0 0 0 7px var(--line);
-      filter:saturate(0.95);
-    }
+/* Tables */
+table {
+    border-collapse: collapse; width: 100%;
+    background: var(--paper);
+    margin-top: 14px;
+    font-size: 14px;
+    font-family: var(--sans);
+}
+th, td {
+    border: 1px solid var(--line);
+    padding: 10px 12px; text-align: left; vertical-align: top;
+}
+th {
+    background: var(--navy); color: #fff;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+}
+tbody tr:nth-child(even) { background: var(--bg-alt); }
+tbody tr:hover { background: #efe7d2; }
 
-    /* Collapsible sections — academic feel with ornamental marker */
-    details.section{
-      padding:26px 0 22px;
-      border-top:1px solid var(--line);
-      scroll-margin-top:80px;
-      position:relative;
-    }
-    details.section:first-of-type{ margin-top:18px; }
+/* Status pills */
+.pill {
+    display: inline-block; padding: 3px 10px;
+    border-radius: 12px; font-size: 11px;
+    font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--sans);
+}
+.pill-pending  { background: #fbf3df; color: var(--warn);   border: 1px solid #e8c47a; }
+.pill-verified { background: #e3f0e6; color: var(--ok);     border: 1px solid #a8d4b8; }
+.pill-returned { background: #f9e8d3; color: #8a4500;       border: 1px solid #e8b884; }
+.pill-rejected { background: #f5dde2; color: var(--accent); border: 1px solid #d9a8b2; }
 
-    details.section > summary{
-      list-style:none;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:14px;
-      user-select:none;
-      margin:0 0 4px;
-      outline:none;
-      border-radius:4px;
-      padding:6px 0;
-    }
-    details.section > summary::-webkit-details-marker{ display:none; }
-    details.section > summary h2{
-      margin:0;
-      transition:color .2s ease;
-    }
-    details.section > summary::before{
-      content:"§";
-      font-family: var(--display);
-      font-size:28px;
-      color:var(--accent);
-      font-weight:600;
-      line-height:1;
-      transition:color .2s ease, transform .3s ease;
-    }
-    details.section > summary::after{
-      content:"+";
-      margin-left:auto;
-      color:var(--muted);
-      font-size:22px;
-      font-weight:300;
-      transition:transform .25s ease, color .2s ease;
-      font-family: var(--sans);
-    }
-    details.section[open] > summary::after{
-      content:"−";
-      color:var(--accent);
-    }
-    details.section[open] > summary h2{ color:var(--accent); }
-    details.section[open] > summary::before{
-      color:var(--accent-2);
-      transform:rotate(8deg);
-    }
-    details.section:not([open]){ padding-bottom:18px; }
+/* Stat cards row */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin: 18px 0 4px 0;
+}
+.stat {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--navy);
+    border-radius: 3px;
+    padding: 14px 16px;
+}
+.stat .label {
+    font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    font-weight: 600;
+    font-family: var(--sans);
+}
+.stat .value {
+    font-size: 30px; color: var(--navy);
+    font-family: var(--display);
+    font-weight: 700; margin-top: 4px;
+    letter-spacing: 0.005em;
+}
+.stat.gold     { border-left-color: var(--gold); }
+.stat.maroon   { border-left-color: var(--accent); }
+.stat.green    { border-left-color: var(--ok); }
+.stat.warn     { border-left-color: var(--warn); }
 
-    /* Subsection headings inside details */
-    .sub-h{
-      font-family: var(--display);
-      font-weight:600;
-      color:var(--navy);
-      margin:22px 0 6px;
-      font-size:19px;
-      letter-spacing:0.01em;
-      position:relative;
-      padding-bottom:4px;
-      border-bottom:1px dotted var(--line);
-      display:inline-block;
-      padding-right:16px;
-    }
-    .sub-h:first-child{ margin-top:6px; }
+/* Notes / alerts — warm parchment feel */
+.note {
+    background: #fdf6e3;
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px; margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+    font-family: var(--serif);
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: var(--text);
+}
+.alert {
+    padding: 10px 14px; margin: 14px 0;
+    border-radius: 3px; font-size: 14px;
+    border-left: 3px solid;
+    font-family: var(--sans);
+}
+.alert-warning { background: #fbf3df; border-color: var(--warn);   color: #5a3a00; }
+.alert-error   { background: #f5dde2; border-color: var(--accent); color: #5a1623; }
+.alert-success { background: #e3f0e6; border-color: var(--ok);     color: #14442a; }
 
-    /* Publications: refined ordered list */
-    details.section ol[reversed] li{
-      padding:6px 0 6px 6px;
-      border-bottom:1px solid var(--line-soft);
-    }
-    details.section ol[reversed] li:last-child{ border-bottom:none; }
-    details.section ol[reversed] li i{
-      color:var(--accent);
-      font-style:italic;
-    }
+/* Prose — for scholarly body text inside cards */
+.prose {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--text);
+}
+.prose strong { color: var(--navy); }
 
-    /* Footer */
-    footer{
-      border-top:1px solid var(--line);
-      padding:24px 0 26px;
-      color:var(--muted);
-      font-size:13px;
-      margin-top:30px;
-      background:var(--bg-alt);
-      position:relative;
-    }
-    footer::before{
-      content:"";
-      display:block;
-      position:absolute;
-      top:-1px; left:50%;
-      transform:translateX(-50%);
-      width:80px;
-      height:3px;
-      background:var(--accent-2);
-    }
-    footer .wrap{ text-align:center; font-family: var(--serif); font-style:italic; }
+/* Footer */
+.footer {
+    margin-top: 50px; padding: 22px 40px;
+    background: var(--bg-alt); color: var(--muted);
+    text-align: center;
+    font-size: 13px;
+    font-family: var(--serif);
+    font-style: italic;
+    border-top: 1px solid var(--line);
+    position: relative;
+}
+.footer::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -1px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: var(--gold);
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
 
-    /* Decorative divider used between hero and main grid (optional) 
-    .ornament{
-      text-align:center;
-      color:var(--accent-2);
-      font-size:22px;
-      margin:18px 0 6px;
-      letter-spacing:8px;
-      font-family: var(--display);
-    }
-*/
-    @media (max-width: 768px){
-      .hero-flex{ flex-direction:column-reverse; gap:16px; align-items:flex-start; }
-      .hero-photo{ width:120px; height:150px; }
-      h2{ font-size:22px; }
-      li, ol li{ font-size:16px; }
-      .overview-card p{ font-size:16.5px; }
-      .brand-mark{ font-size:15px; }
-      nav a:not(.brand-mark){ padding:6px 10px; font-size:12.5px; }
-    }
-    @media (min-width: 800px){
-      .grid{grid-template-columns: 1.4fr 1fr}
-    }
-  </style>
+/* Utility */
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+.muted { color: var(--muted); font-size: 13px; font-family: var(--sans); }
+.center { text-align: center; }
+
+@media (max-width: 700px) {
+    .row-2, .row-3 { grid-template-columns: 1fr; }
+    .top-bar { padding: 14px 18px; flex-wrap: wrap; }
+    .top-bar .session-info { margin-left: 0; width: 100%; text-align: left; }
+    .container { padding: 0 16px; }
+    .sub-nav { padding: 8px 16px; }
+}
+"""
+
+GOOGLE_FONTS = (
+    '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    '<link href="https://fonts.googleapis.com/css2?'
+    'family=Cormorant+Garamond:wght@500;600;700'
+    '&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400'
+    '&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">'
+)
+
+# Macro for the institute header bar — included on every page
+def institute_header(role_label=None, logout_url=None):
+    return f"""
+    <div class="top-accent-bar"></div>
+    <div class="top-bar">
+        <div class="seal">SE</div>
+        <div class="titles">
+            <h1>Office of Academic Affairs</h1>
+            <p>Supplementary Examination Portal</p>
+        </div>
+        <div class="session-info">
+            {'Logged in as <strong>' + role_label + '</strong> &middot; <a href="' + logout_url + '">Logout</a>' if role_label else 'Academic Session 2025–26'}
+        </div>
+    </div>
+    """
+
+# ===========================================================================
+# TEMPLATES
+# ===========================================================================
+
+HOME_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supplementary Examination Portal</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2a3554 100%);
+    color: #fff; padding: 60px 40px 56px;
+    text-align: center;
+    position: relative;
+}
+.hero::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+        var(--gold) 0%, var(--gold) 50%,
+        var(--accent) 50%, var(--accent) 100%);
+}
+.hero h2 {
+    font-family: var(--display);
+    color: #fff; font-size: 42px; margin: 0 0 12px 0;
+    font-weight: 600; letter-spacing: 0.005em;
+}
+.hero .tagline {
+    color: var(--gold-light); font-size: 12px;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    font-weight: 500;
+}
+.login-cards {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 28px; margin: -50px auto 30px auto;
+    max-width: 900px; padding: 0 30px; position: relative; z-index: 2;
+}
+.login-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--gold);
+    border-radius: 6px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 6px 22px rgba(26, 34, 56, 0.10);
+    text-align: center;
+    transition: transform .18s, box-shadow .18s, border-color .18s;
+}
+.login-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(26, 34, 56, 0.16);
+    border-color: var(--gold);
+}
+.login-card.admin { border-top-color: var(--accent); }
+.login-card .icon {
+    font-size: 38px; margin-bottom: 8px;
+    font-family: var(--display);
+}
+.login-card h3 {
+    font-family: var(--display);
+    font-size: 24px; margin: 6px 0 10px 0;
+    font-weight: 600; letter-spacing: 0.005em;
+}
+.login-card p {
+    color: var(--muted);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 64px;
+    margin-bottom: 18px;
+}
+.login-card .btn { width: 100%; padding: 12px; font-size: 12.5px; }
+
+.info-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 22px; }
+
+/* Scholarly prose inside the home cards */
+.home-prose {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--text);
+    text-align: justify;
+    hyphens: auto;
+    margin: 0 0 12px 0;
+}
+.home-prose:first-of-type::first-letter {
+    font-family: var(--display);
+    font-size: 1.15em;
+    font-weight: 600;
+    color: var(--accent);
+}
+.home-prose strong { color: var(--navy); }
+
+@media (max-width: 800px) {
+    .login-cards { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
+    .hero { padding: 44px 20px; }
+    .hero h2 { font-size: 30px; }
+}
+</style>
 </head>
 <body>
+""" + institute_header() + """
+<div class="hero">
+    <h2>Supplementary Examination 2025–26</h2>
+    <p class="tagline">Apply &middot; Verify &middot; Appear</p>
+</div>
 
-<div class="top-bar" aria-hidden="true"></div>
+<div class="login-cards">
+    <div class="login-card">
+        <div class="icon" style="color: var(--navy);">&#9881;</div>
+        <h3>Student Login</h3>
+        <p>Access the supplementary examination form, submit failed courses and upload your fee receipt.</p>
+        <a class="btn" href="{{ url_for('student_login') }}">Continue as Student</a>
+    </div>
+    <div class="login-card admin">
+        <div class="icon" style="color: var(--maroon);">&#9733;</div>
+        <h3>Administration Login</h3>
+        <p>Verify applications, track department-wise statistics and prepare question papers.</p>
+        <a class="btn btn-maroon" href="{{ url_for('admin_login') }}">Continue as Administrator</a>
+    </div>
+</div>
 
-<header>
-  <div class="wrap">
-    <nav aria-label="Main navigation">
-      <a href="#home" class="brand-mark">Dr. O. P. <span>Yadav</span></a>
-      <a href="#home">Home</a>
-      <a href="#teaching">Teaching</a>
-      <a href="#research">Research</a>
-      <a href="#activities">Activities</a>
-    </nav>
-  </div>
-</header>
+<div class="container">
 
-<section class="wrap hero hero-flex" id="home">
-  <div class="hero-text">
-    <h1 class="name">Dr. Om Prakash Yadav</h1>
-    <p class="subtitle">Assistant Professor</p>
-    <p class="subtitle dept">Department of Mathematics &amp; Scientific Computing</p>
-    <p class="subtitle dept">National Institute of Technology Hamirpur (H.P.)</p>
-    <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a> &nbsp;·&nbsp; Tel: +91-1972-254108</p>
-  </div>
+    <div class="info-grid">
+        <div class="box">
+            <div class="section-title">
+                <h3>About the Examination</h3>
+                <span class="accent">Notice</span>
+            </div>
+            <p class="home-prose">
+                The Supplementary Examination is conducted for students who have been
+                awarded an <strong>F (Fail)</strong> grade in one or more theory courses
+                during the regular semester. Eligible students may apply through this portal
+                within the dates listed alongside.
+            </p>
+            <p class="home-prose" style="margin-bottom: 0;">
+                <strong>Examination Fee:</strong> &#8377; 500 per course (non-refundable).<br>
+                <strong>Mode of Payment:</strong> SBI Collect / Online transfer.<br>
+                <strong>Maximum courses per applicant:</strong> 10.
+            </p>
+            <div class="note" style="margin-top: 16px;">
+                <strong>Parent Department</strong> refers to the department of the student's
+                programme &mdash; not the department of the failed course. For instance, a
+                student of <em>B.Tech in Mathematics &amp; Computing</em> belongs to the
+                <em>Mathematics &amp; Scientific Computing</em> department.
+            </div>
+        </div>
 
-  <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="140" height="170" />
-</section>
-
-<main class="wrap">
-
-  
-
-  <div class="grid">
-    <div class="card overview-card">
-      <h2>Overview</h2>
-      <p>
-        We work in applied mathematics, focusing on the numerical analysis of partial differential equations, with particular emphasis on finite element and finite difference methods. Our interests include reaction–diffusion models, higher-order numerical schemes, and, more recently, the exploration of physics-informed neural networks (PINNs) for scientific computing applications.
-      </p>
+        <div class="box">
+            <div class="section-title">
+                <h3>Important Dates</h3>
+                <span class="accent">Schedule</span>
+            </div>
+            <table>
+                <thead><tr><th>Event</th><th>Date</th></tr></thead>
+                <tbody>
+                {% for d in important_dates %}
+                <tr><td>{{ d.event }}</td><td><strong>{{ d.date }}</strong></td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="card overview-card quicklinks-card">
-      <h2>Quick Links</h2>
-      <ul>
-        <li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></li>
-        <li><a href="https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav" target="_blank" rel="noopener">NITH Faculty Profile</a></li>
-        <li><a href="https://nith.ac.in/td/index.html" target="_blank" rel="noopener">NITH Directory</a></li>
-        <li><a href="https://nith.ac.in/bachelor-course-structure-syllabus" target="_blank" rel="noopener">NITH BTech Courses</a></li>
-        <li><a href="https://nith.ac.in/uploads/topics/updated-math-syllabus-msc-nep202017222488503953.pdf" target="_blank" rel="noopener">NITH MSc Courses</a></li>
-        <li><a href="https://nith.ac.in/downloads-for-faculty-staff" target="_blank" rel="noopener">NITH Faculty Downloads</a></li>
-      </ul>
+    <div class="box" style="margin-top: 22px;">
+        <div class="section-title">
+            <h3>Tentative Date Sheet</h3>
+            <span class="accent">May 2026</span>
+        </div>
+        <p class="muted">
+            The schedule below is indicative. The final date sheet will be published
+            on the institute notice board and on this portal one week before the
+            commencement of examinations.
+        </p>
+        <table>
+            <thead>
+                <tr><th>Date</th><th>Day</th><th>Session</th><th>Course</th></tr>
+            </thead>
+            <tbody>
+            {% for r in date_sheet %}
+            <tr>
+                <td>{{ r.date }}</td>
+                <td>{{ r.day }}</td>
+                <td>{{ r.session }}</td>
+                <td>{{ r.course }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
-  </div>
 
-  <!-- EDUCATION (was Academic) -->
-  <details class="section" id="education" open>
-    <summary><h2>Education</h2></summary>
-    <ul>
-      <li>B.Sc. from University of Allahabad (2009).</li>
-      <li>M.Sc. from IIT Kanpur (2011).</li>
-      <li>Ph.D. from IIT Roorkee (2019).</li>
-    </ul>
-  </details>
+    <div class="box" style="margin-top: 22px;">
+        <div class="section-title">
+            <h3>Instructions for Applicants</h3>
+            <span class="accent">Read carefully</span>
+        </div>
+        <ol style="margin: 0; padding-left: 22px;">
+            <li>Log in with your roll number to begin a new application.</li>
+            <li>Pay the examination fee through SBI Collect and keep the reference number ready.</li>
+            <li>Fill in the form, listing each failed course along with its course code and offering department.</li>
+            <li>Upload a clear copy of your fee receipt (PDF / PNG / JPG, &le; 10 MB).</li>
+            <li>Submit the form before the deadline. You will receive an Application ID for future reference.</li>
+            <li>Track the verification status of your application through the student dashboard.</li>
+        </ol>
+    </div>
+</div>
 
-  <!-- TEACHING -->
-  <details class="section" id="teaching">
-    <summary><h2>Teaching</h2></summary>
-
-    <p class="sub-h">Courses Taught</p>
-    <ul>
-      <li>MA-211: Discrete Mathematics</li>
-      <li>MA-322: Advanced Differential Equations</li>
-      <li>MA-203: Numerical Methods</li>
-      <li>MA-724: Applied Linear Algebra</li>
-      <li>MA-814: Research Methodology</li>
-      <li>MA-815: Research and Publication Ethics</li>
-      <li>MA-611: Real Analysis</li>
-      <li>MA-321: Real and Complex Analysis</li>
-      <li>MA-741: Numerical Methods of Differential Equations</li>
-      <li>MA-212: Discrete Mathematics</li>
-      <li>MA-242: Mathematical Modeling and Simulation</li>
-      <li>MA-211: Numerical Methods &amp; Computation</li>
-    </ul>
-
-    <p class="sub-h">Ongoing Teaching</p>
-    <ul>
-      <li>MA-733: Finite Element Method <a href="assets/PDFs/MA733 FEM Syllabus.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
-      <li>MA-242: Mathematical Modeling and Simulation <a href="assets/PDFs/MA242MMS.pdf" target="_blank" rel="noopener">(Syllabus)</a></li>
-    </ul>
-  </details>
-
-  <!-- RESEARCH -->
-  <details class="section" id="research">
-    <summary><h2>Research</h2></summary>
-
-    <p class="sub-h">Areas of Interest</p>
-    <ul>
-      <li>Finite element analysis of partial differential equations</li>
-      <li>Numerical Analysis</li>
-      <li>Finite difference methods</li>
-      <li>Physics Informed Neural Networks</li>
-    </ul>
-
-    <p class="sub-h">Funded Research Project</p>
-    <ul>
-      <li><b>Title:</b> <i>Study of Reaction–Diffusion Equations Using Higher-Order FEM and PINNs with Applications to Lithology and Mountain Instability</i></li>
-      <li><b>Funding Agency:</b> Anusandhan National Research Foundation (ANRF), Government of India</li>
-      <li><b>Scheme:</b> ARG-MATRICS</li>
-      <li><b>Role:</b> Principal Investigator</li>
-      <li><b>Duration:</b> 5 years</li>
-      <li><b>Total Grant:</b> ₹30.00 Lakhs</li>
-    </ul>
-
-    <p class="sub-h">Ph.D. Supervision</p>
-    <ul>
-      <li>Ms. Sanjalee (2K19-PhD-Math-493), Co-supervisor — Awarded. Title: Problems on onset of convection and heat transfer in the Suspension of Nanofluids.</li>
-      <li>Ms. Anisha Devi (2K20-Ph.D.-Math-519) — Awarded. Title: Higher Order Finite Element Analysis and Approximations of Nonlinear Reaction-Diffusion Equations.</li>
-      <li>Mr. Rohit Sharma (22RMA004) — Ongoing since 2022. Title: Mixed Finite Element Methods for Time Dependent Fourth Order Problems.</li>
-      <li>Mr. Abhishek Latwal (25RMA003) — Ongoing since 2025.</li>
-    </ul>
-
-    <p class="sub-h">M.Sc. Project Supervision</p>
-    <ol>
-      <li>Deb Kumar Bhakat (23MMA018), Numerical Approximation of the One-Dimensional Burgers'-Fisher Equation Using Finite Element Method, 2025.</li>
-      <li>Sakshi (23MMA006), Numerical Approximation of the One-Dimensional Fisher Equation Using Finite Element Method, 2025.</li>
-      <li>Vinay (23MMA019), Numerical Approximation of the One-Dimensional Burgers Equation Using Finite Element Method, 2025.</li>
-    </ol>
-
-    <p class="sub-h">B.Tech. Project Supervision</p>
-    <ol>
-      <li>Arman Shukla (21BMA009), Mrigesh Thakur (21BMA010), Maanas Sood (21BMA013), Dharuva Thakur (21BMA016), Adaptive Strategy Selection Framework Using Hidden Markov Models for Market Regime Detection, 2025.</li>
-      <li>Yachna Arora (21BMA008), Gaganpreet Kaur (21BMA032), Komal (21BMA035), Multi-Object Detection and Motion Tracking for Assistive Technology, 2025.</li>
-    </ol>
-
-    <p class="sub-h">Selected Publications</p>
-    <ol reversed>
-      <li>Sanjalee Maheshwari, YD Sharma, OP Yadav, Ankita Bisht “Effect of Inclined Magnetic Field on Thermal Instability of Internally Heated Bi‐Viscous Bingham Nanofluid Layer.” <i>ZAMM‐Journal of Applied Mathematics and Mechanics/Zeitschrift für Angewandte Mathematik und Mechanik</i>, Vol. 106(4), pp. e70405, April 2026.</li>
-      <li>Anisha Devi, O.P. Yadav. “A numerical study of the generalized FitzHugh-Nagumo equation using a higher order Galerkin finite element method.” <i>Computational Mathematics and Mathematical Physics</i>, Vol. 65, pp. 629–648, April 2025.</li>
-      <li>R. Sharma, O.P. Yadav. “The Evolution of Finite Element Approaches in Reaction-Diffusion Modeling.” <i>Archives of Computational Methods in Engineering</i>, Vol. 32, pp. 2745–2766, January 2025.</li>
-      <li>Sanjalee Maheshwari, Y.D. Sharma, O.P. Yadav, Ankita Bisht. “Weak nonlinear thermo bioconvection: Heat transfer via artificial neural network.” <i>International Communications in Heat and Mass Transfer</i>, Vol. 159, 108090, December 2024.</li>
-      <li>Anisha Devi, O.P. Yadav. “Analysis and Simulation of the (2+1)-Dimensional Fisher’s Reaction-Diffusion Equation with Higher Order Finite Element Method.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, June 2024.</li>
-      <li>Anisha Devi, O.P. Yadav. “Higher Order Galerkin Finite Element Method for (1+2)-Dimensional Generalized Benjamin-Bona-Mahony-Burgers Equation: A Numerical Investigation.” <i>Wave Motion</i>, Vol. 128, 103321, March 2024.</li>
-      <li>Anisha Devi, O.P. Yadav. “Higher-Order Galerkin Finite Element Method for Nonlinear Coupled Reaction-Diffusion Models.” <i>Numerical Heat Transfer, Part B: Fundamentals</i>, 1–25, March 2024.</li>
-      <li>Sanjalee, Y.D. Sharma, O.P. Yadav. “Unsteady Double-Diffusive Brinkman-Bènard Convection in Cylindrical Enclosure Saturated with Hybrid Bi-Viscous Bingham Nanoliquid.” <i>European Journal of Mechanics-B/Fluids</i>, Vol. 105, pp. 138–150, May 2024.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Convective instability of Blood-based Au−Fe3O4 hybrid nanoliquid under the presence of magnetic field with internal heat source: Application to cancer treatment.” <i>Zeitschrift für Angewandte Mathematik und Mechanik (ZAMM)</i>, Vol. 103(12), e202200518, July 2023. <a href="https://doi.org/10.1002/zamm.202200518" target="_blank" rel="noopener">DOI</a></li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Study of Thermal Convection in Chemically Reactive Carbon Nanotube Suspension Saturated in Anisotropic Porous Enclosure.” <i>International Journal of Modern Physics B</i>, Vol. 37(25), 2350297, July 2023.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “The linear and non-linear study of effect of rotation and internal heat source/sink on Bènard convection.” <i>Fluid Dynamics Research</i>, 55(4), 045503, July 2023.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Study of Heat Transfer in Anisotropic Porous Enclosures Saturated with Casson Fluid Based Carbon Nanotube Suspension.” <i>Journal of Porous Media</i>, 26(10), 85–107, May 2023.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Regular and chaotic Rayleigh Bénard convection in hybrid Casson nanoliquid under the effect of non-uniform heat source.” <i>Chinese Journal of Physics</i>, 83, 28–50, Feb 2023.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Entropy Generation in Magnetohydrodynamics Flow of Hybrid Casson Nanofluid in Porous Channel: Lie Group Analysis.” <i>International Journal of Applied and Computational Mathematics</i>, 8(5), 1–28, September 2022.</li>
-      <li>Sanjalee, YD Sharma, OP Yadav. “Stability analysis of double diffusive thermo-bioconvection in aerobic-microorganism-suspended Casson nanofluid.” <i>The European Physical Journal Plus</i>, 137, 1–13, June 2022.</li>
-      <li>K. Charan, O.P. Yadav, B.C. Tewari. “Charged anisotropic spherical collapse with heat flow.” <i>The European Physical Journal C</i>, 81, 1–11, Jan 2021.</li>
-      <li>O.P. Yadav, R. Jiwari. “A finite element approach for analysis and computational modelling of coupled reaction diffusion models.” <i>Numerical Methods for Partial Differential Equations</i>, 35(2), 830–850, 2019.</li>
-      <li>O.P. Yadav, R. Jiwari. “Some soliton-type analytical solutions and numerical simulation of nonlinear Schrödinger equation.” <i>Nonlinear Dynamics</i>, 95, 2825–2836, 2019.</li>
-      <li>O.P. Yadav, R. Jiwari. “A finite element approach to capture Turing patterns of autocatalytic Brusselator model.” <i>Journal of Mathematical Chemistry</i>, 57, 769–789, 2019.</li>
-      <li>O.P. Yadav, R. Jiwari. “Finite element analysis and approximation of Burgers’-Fisher equation.” <i>Numerical Methods for Partial Differential Equations</i>, 33(5), 1652–1677, 2017.</li>
-    </ol>
-  </details>
-
-  <!-- ACTIVITIES -->
-  <details class="section" id="activities">
-    <summary><h2>Activities</h2></summary>
-
-    <p class="sub-h">Workshops Conducted</p>
-    <ul>
-      <li>2nd Workshop on Applications of MATLAB in Engineering and Science, NIT Hamirpur, 15–19 December 2021.</li>
-      <li>e-Workshop on Applications of Financial Mathematics in Stock Market, NIT Hamirpur, 25–29 May 2022.</li>
-    </ul>
-
-    <p class="sub-h">Faculty Development Programs Conducted</p>
-    <ul>
-      <li>Unified Approaches to Solving Differential Equations: From Classical Methods to Neural Networks (UniSDE-2025), Department of Mathematics and Sc. Comp., NIT Hamirpur, sponsored by E&amp;ICT Academy, PDPM IIITDM Jabalpur, December 08–19, 2025.</li>
-    </ul>
-
-    <p class="sub-h">Conferences Conducted</p>
-    <ul>
-      <li>4th International Conference on Nonlinear Applied Analysis and Optimization (ICNAAO 2024), NIT Hamirpur, 17–19 October 2024.</li>
-    </ul>
-
-    <p class="sub-h">Workshops Attended</p>
-    <ul>
-      <li>Indo-French Workshop on Innovative Numerical Methods, Department of Mathematics, IIT Roorkee, January 06–10, 2025.</li>
-    </ul>
-
-    <p class="sub-h">Conferences Attended</p>
-    <ul>
-      <li>15th Conference on Dynamical Systems Applied to Biology and Natural Sciences (DSABNS 2024), NOVA FCT, Universidade NOVA de Lisboa, Portugal, February 5–9, 2024.</li>
-    </ul>
-
-    <p class="sub-h">Expert Lectures Delivered</p>
-    <ul>
-      <li>Solutions of Some Differential Equations by Finite Element Method — FDP on Recent Techniques for the Solutions of Nonlinear Differential Equations, JIIT Noida, 23–28 August 2021.</li>
-      <li>The basics of MATLAB and its applications in data analysis — e-STC (Dept. of Management, NIT Hamirpur), 15–19 January 2024.</li>
-      <li>Research and Publication Ethics — e-STC on Statistical Analysis in Research (Dept. of Management, NIT Hamirpur), 24–28 July 2023.</li>
-    </ul>
-
-    <p class="sub-h">Administrative Responsibilities — Current</p>
-    <ul>
-      <li>Deputy Center Incharge CCMT/CCMN 2025 (Admissions), NIT Hamirpur</li>
-      <li>Faculty Incharge (NEP), NIT Hamirpur</li>
-      <li>OIC, Examination &amp; Time Table</li>
-    </ul>
-
-    <p class="sub-h">Administrative Responsibilities — Previous</p>
-    <ul>
-      <li>Convener, Departmental Bachelor Programme Committee, DoMSC, NIT Hamirpur</li>
-      <li>Deputy Center Incharge CCMT/CCMN 2024 (Admissions), NIT Hamirpur</li>
-      <li>ANO NIRF, NIT Hamirpur</li>
-      <li>AFI Purchase, NIT Hamirpur</li>
-      <li>AFI Technical Activities, NIT Hamirpur</li>
-      <li>Convener, Departmental Doctoral Programme Committee, DoMSC, NIT Hamirpur</li>
-      <li>Member Secretary, Doctoral Students Selection Committee, DoMSC, NIT Hamirpur</li>
-      <li>OIC Registration, Lab and Classrooms, Library, DoMSC, NIT Hamirpur</li>
-    </ul>
-  </details>
-
-</main>
-
-<footer>
-  <div class="wrap">
-    © <span id="y"></span> Dr. Om Prakash Yadav · Hosted on GitHub Pages
-  </div>
-</footer>
-
-<script>
-  // Footer year
-  document.getElementById("y").textContent = new Date().getFullYear();
-
-  // Active nav highlighting on scroll
-  const navLinks = document.querySelectorAll("nav a:not(.brand-mark)");
-  const sections = document.querySelectorAll("#home, details.section");
-
-  function updateActiveNav() {
-    let current = "home";
-    sections.forEach(section => {
-      const rect = section.getBoundingClientRect();
-      if (rect.top <= 130 && rect.bottom >= 130) {
-        current = section.id;
-      }
-    });
-    navLinks.forEach(link => {
-      link.classList.toggle("active", link.getAttribute("href") === "#" + current);
-    });
-  }
-
-  window.addEventListener("scroll", updateActiveNav, { passive: true });
-  window.addEventListener("resize", updateActiveNav);
-  updateActiveNav();
-
-  // Open the correct section when navigated via hash
-  function openFromHash() {
-    const id = (location.hash || "").replace("#", "");
-    if (!id) return;
-    const target = document.getElementById(id);
-    if (target && target.tagName.toLowerCase() === "details") {
-      target.setAttribute("open", "");
-      const summary = target.querySelector("summary");
-      if (summary) summary.scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-  }
-  window.addEventListener("hashchange", openFromHash);
-  openFromHash();
-
-  // Clicking a nav link should always open the target section
-  navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      const id = link.getAttribute("href").replace("#", "");
-      const target = document.getElementById(id);
-      if (target && target.tagName.toLowerCase() === "details") {
-        target.setAttribute("open", "");
-      }
-    });
-  });
-</script>
-
+<div class="footer">
+    Office of Academic Affairs &middot; Supplementary Examination Cell<br>
+    For queries, contact <a href="#">academic.office@institute.edu</a>
+    &middot; &copy; 2026 Institute of Technology
+</div>
 </body>
 </html>
+"""
+
+
+# ---------------- STUDENT LOGIN ----------------
+STUDENT_LOGIN_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student Login &mdash; Supplementary Portal</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.login-wrap {
+    max-width: 460px; margin: 50px auto;
+}
+.login-wrap .box {
+    border-top: 4px solid var(--gold);
+}
+</style>
+</head>
+<body>
+""" + institute_header() + """
+<div class="sub-nav">
+    <a href="{{ url_for('home') }}">&laquo; Back to Home</a>
+</div>
+
+<div class="login-wrap">
+    <div class="box">
+        <div class="section-title">
+            <h2>Student Login</h2>
+            <span class="accent">Step 1 of 2</span>
+        </div>
+
+        {% with msgs = get_flashed_messages(with_categories=true) %}
+            {% for cat, m in msgs %}
+            <div class="alert alert-{{ 'error' if cat == 'error' else 'warning' }}">{{ m }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('student_login') }}">
+            <label>Full Name (as per institute records)</label>
+            <input type="text" name="student_name" required autofocus>
+
+            <label>Roll Number</label>
+            <input type="text" name="roll_no" required placeholder="e.g. 2023MT12345">
+
+            <button type="submit" style="margin-top: 22px; width: 100%;">
+                Login &amp; Proceed to Form
+            </button>
+        </form>
+
+        <p class="muted center" style="margin-top: 18px;">
+            Use your official institute roll number. This identity will be attached to
+            your supplementary application.
+        </p>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- ADMIN LOGIN ----------------
+ADMIN_LOGIN_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Administrator Login &mdash; Supplementary Portal</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.login-wrap { max-width: 460px; margin: 50px auto; }
+.login-wrap .box { border-top: 4px solid var(--accent); }
+</style>
+</head>
+<body>
+""" + institute_header() + """
+<div class="sub-nav">
+    <a href="{{ url_for('home') }}">&laquo; Back to Home</a>
+</div>
+
+<div class="login-wrap">
+    <div class="box">
+        <div class="section-title">
+            <h2>Administrator Login</h2>
+            <span class="accent">Restricted</span>
+        </div>
+
+        {% with msgs = get_flashed_messages(with_categories=true) %}
+            {% for cat, m in msgs %}
+            <div class="alert alert-{{ 'error' if cat == 'error' else 'warning' }}">{{ m }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('admin_login') }}">
+            <label>Username</label>
+            <input type="text" name="username" required autofocus>
+
+            <label>Password</label>
+            <input type="password" name="password" required>
+
+            <button type="submit" class="btn-maroon" style="margin-top: 22px; width: 100%;">
+                Login to Admin Console
+            </button>
+        </form>
+
+        <p class="muted center" style="margin-top: 18px;">
+            For demo: <code>admin / admin123</code> or <code>dean / dean123</code>.
+            Replace with institutional SSO in production.
+        </p>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- STUDENT FORM ----------------
+STUDENT_FORM_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Supplementary Examination Form</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.course-row {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 4px;
+    padding: 16px 18px; margin-top: 14px;
+    background: #fdfbf3;
+}
+.course-row h4 {
+    margin: 0 0 8px 0;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.005em;
+}
+.grid {
+    display: grid;
+    grid-template-columns: 1.1fr 2fr 1.6fr;
+    gap: 14px;
+}
+.top-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.fee-box {
+    margin-top: 22px; padding: 14px 24px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+    color: #fff; border-radius: 4px;
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 14px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border-left: 3px solid var(--gold);
+}
+.fee-box span {
+    color: var(--gold-light);
+    font-family: var(--display);
+    font-size: 26px; font-weight: 700;
+    letter-spacing: 0.005em;
+    text-transform: none;
+}
+@media (max-width: 700px) {
+    .grid, .top-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['student']['name'] }}",
+                       logout_url="{{ url_for('student_logout') }}") + """
+<div class="sub-nav">
+    <a href="{{ url_for('home') }}">Home</a>
+    <a class="active" href="{{ url_for('student_form') }}">New Application</a>
+    <a href="{{ url_for('student_my_applications') }}">My Applications</a>
+</div>
+
+<div class="container">
+    <div class="box">
+        <div class="section-title">
+            <h2>Supplementary Examination Form</h2>
+            <span class="accent">Academic Session 2025–26</span>
+        </div>
+
+        <div class="note">
+            <strong>Note:</strong> The <em>Parent Department / Programme Department</em>
+            is the department of your programme, not the department of the failed
+            course. For example, for a student of <em>B.Tech in Mathematics &amp; Computing</em>
+            the parent department is <em>Mathematics &amp; Scientific Computing</em>.
+        </div>
+
+        <form method="post" action="{{ url_for('submit') }}" enctype="multipart/form-data">
+            <div class="top-grid">
+                <div>
+                    <label>Student Name</label>
+                    <input type="text" name="student_name" required
+                           value="{{ session['student']['name'] }}" readonly>
+                </div>
+                <div>
+                    <label>Roll Number</label>
+                    <input type="text" name="roll_no" required
+                           value="{{ session['student']['roll_no'] }}" readonly>
+                </div>
+            </div>
+
+            <label>Parent Department / Programme Department</label>
+            <select name="parent_dept" required>
+                <option value="">-- Select Department --</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}">{{ dept }}</option>
+                {% endfor %}
+            </select>
+
+            <h3 style="margin-top: 26px; border-bottom: 2px solid var(--gold); padding-bottom: 6px;">
+                Failed Courses
+            </h3>
+
+            <div id="courses-container">
+                <div class="course-row">
+                    <h4>Failed Course 1</h4>
+                    <div class="grid">
+                        <div>
+                            <label>Course Code</label>
+                            <input type="text" name="course_code[]" required>
+                        </div>
+                        <div>
+                            <label>Course Title</label>
+                            <input type="text" name="course_title[]" required>
+                        </div>
+                        <div>
+                            <label>Course Department</label>
+                            <select name="course_dept[]" required>
+                                <option value="">-- Select Department --</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept }}">{{ dept }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="button" class="btn-ghost" onclick="addCourseRow()" style="margin-top: 14px;">
+                + Add Another Course
+            </button>
+            <span class="muted">Maximum 10 courses</span>
+
+            <div class="fee-box">
+                Total Fee: &#8377; <span id="feeDisplay">500</span>
+            </div>
+
+            <label>Payment Reference / SBI Collect Reference</label>
+            <input type="text" name="payment_reference" placeholder="Enter transaction / reference number">
+
+            <label>Upload Fee Receipt</label>
+            <input type="file" name="receipt" accept=".pdf,.png,.jpg,.jpeg">
+            <p class="muted">Allowed formats: PDF, PNG, JPG, JPEG. Maximum size: 10 MB.</p>
+
+            <button type="submit" class="btn-gold" style="margin-top: 20px;">
+                Submit Application
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="footer">Office of Academic Affairs &middot; &copy; 2026</div>
+
+<script>
+let courseCount = 1;
+const maxCourses = 10;
+
+function updateFee() {
+    document.getElementById("feeDisplay").innerText = courseCount * 500;
+}
+function addCourseRow() {
+    if (courseCount >= maxCourses) {
+        alert("You can add a maximum of 10 courses.");
+        return;
+    }
+    courseCount++;
+    const container = document.getElementById("courses-container");
+    const departmentOptions = `
+        <option value="">-- Select Department --</option>
+        {% for dept in departments %}
+        <option value="{{ dept }}">{{ dept }}</option>
+        {% endfor %}
+    `;
+    const div = document.createElement("div");
+    div.className = "course-row";
+    div.innerHTML = `
+        <h4>Failed Course ${courseCount}</h4>
+        <div class="grid">
+            <div>
+                <label>Course Code</label>
+                <input type="text" name="course_code[]" required>
+            </div>
+            <div>
+                <label>Course Title</label>
+                <input type="text" name="course_title[]" required>
+            </div>
+            <div>
+                <label>Course Department</label>
+                <select name="course_dept[]" required>${departmentOptions}</select>
+            </div>
+        </div>
+        <button type="button" class="btn-ghost btn-sm" onclick="removeCourseRow(this)" style="margin-top: 10px;">
+            Remove This Course
+        </button>
+    `;
+    container.appendChild(div);
+    updateFee();
+}
+function removeCourseRow(button) {
+    button.parentElement.remove();
+    renumberCourseRows();
+}
+function renumberCourseRows() {
+    const rows = document.querySelectorAll(".course-row");
+    courseCount = rows.length;
+    rows.forEach((row, index) => {
+        row.querySelector("h4").innerText = `Failed Course ${index + 1}`;
+    });
+    updateFee();
+}
+updateFee();
+</script>
+</body>
+</html>
+"""
+
+
+# ---------------- SUCCESS ----------------
+SUCCESS_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Submitted Successfully</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.success-wrap { max-width: 640px; margin: 50px auto; }
+.success-wrap .box { border-top: 4px solid var(--ok); }
+.app-id-display {
+    background: var(--cream); border: 2px dashed var(--gold);
+    padding: 18px; text-align: center; margin: 18px 0;
+    border-radius: 6px;
+}
+.app-id-display .id-num {
+    font-family: var(--display);
+    font-size: 42px; color: var(--navy); font-weight: 700;
+    letter-spacing: 0.005em;
+}
+</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['student']['name'] }}",
+                       logout_url="{{ url_for('student_logout') }}") + """
+<div class="success-wrap">
+    <div class="box">
+        <div class="section-title">
+            <h2>&#10003; Form Submitted Successfully</h2>
+            <span class="accent" style="color: var(--ok);">Acknowledged</span>
+        </div>
+        <p>Your supplementary examination form has been recorded. Please save the
+        Application ID below for all future correspondence.</p>
+
+        <div class="app-id-display">
+            <div class="muted">Application ID</div>
+            <div class="id-num">#{{ "%05d" % app_id }}</div>
+        </div>
+
+        <table>
+            <tr><th style="width:40%;">Total Fee</th><td>&#8377; {{ fee }}</td></tr>
+            <tr><th>Number of Courses</th><td>{{ course_count }}</td></tr>
+            <tr><th>Verification Status</th><td><span class="pill pill-pending">Pending</span></td></tr>
+        </table>
+
+        <div style="margin-top: 22px;">
+            <a class="btn" href="{{ url_for('student_my_applications') }}">View My Applications</a>
+            <a class="btn btn-ghost" href="{{ url_for('student_form') }}">Submit Another Form</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- STUDENT — MY APPLICATIONS ----------------
+MY_APPS_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My Applications</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['student']['name'] }}",
+                       logout_url="{{ url_for('student_logout') }}") + """
+<div class="sub-nav">
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('student_form') }}">New Application</a>
+    <a class="active" href="{{ url_for('student_my_applications') }}">My Applications</a>
+</div>
+
+<div class="container">
+    <div class="box">
+        <div class="section-title">
+            <h2>My Applications</h2>
+            <span class="accent">Roll No: {{ session['student']['roll_no'] }}</span>
+        </div>
+
+        {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>App ID</th><th>Submitted</th><th>Parent Dept</th>
+                    <th>Courses</th><th>Fee</th><th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for a in applications %}
+            <tr>
+                <td>#{{ "%05d" % a.id }}</td>
+                <td>{{ a.created_at }}</td>
+                <td>{{ a.parent_dept }}</td>
+                <td>
+                    <ul style="margin:0; padding-left:18px;">
+                    {% for c in a.courses %}
+                    <li>{{ c.course_code }} &mdash; {{ c.course_title }}</li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>&#8377; {{ a.fee }}</td>
+                <td>
+                    {% set s = a.parent_verification_status %}
+                    <span class="pill pill-{{ s.lower() }}">{{ s }}</span>
+                    {% if a.parent_verification_remarks %}
+                    <div class="muted" style="margin-top:4px;">{{ a.parent_verification_remarks }}</div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-warning">
+            You have not submitted any applications yet.
+            <a href="{{ url_for('student_form') }}">Start a new application</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- ADMIN DASHBOARD ----------------
+ADMIN_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin Console &mdash; Overview</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['admin']['username'] }} (Admin)",
+                       logout_url="{{ url_for('admin_logout') }}") + """
+<div class="sub-nav">
+    <a class="active" href="{{ url_for('admin_dashboard') }}">Overview</a>
+    <a href="{{ url_for('parent_dashboard') }}">Verification</a>
+    <a href="{{ url_for('course_dashboard') }}">All Courses</a>
+    <a href="{{ url_for('admin_question_papers') }}">Question Paper Prep</a>
+    <a href="{{ url_for('home') }}">Public Site</a>
+</div>
+
+<div class="container">
+    <div class="box">
+        <div class="section-title">
+            <h2>Administrator Console</h2>
+            <span class="accent">Overview</span>
+        </div>
+
+        <div class="stats">
+            <div class="stat"><div class="label">Total Applications</div><div class="value">{{ total }}</div></div>
+            <div class="stat warn"><div class="label">Pending</div><div class="value">{{ pending }}</div></div>
+            <div class="stat green"><div class="label">Verified</div><div class="value">{{ verified }}</div></div>
+            <div class="stat gold"><div class="label">Returned</div><div class="value">{{ returned }}</div></div>
+            <div class="stat maroon"><div class="label">Rejected</div><div class="value">{{ rejected }}</div></div>
+            <div class="stat"><div class="label">Total Course Entries</div><div class="value">{{ total_course_rows }}</div></div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="section-title">
+            <h3>Verification Status by Parent Department</h3>
+            <span class="accent">Programme-wise</span>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Parent Department</th><th>Total</th><th>Pending</th>
+                    <th>Verified</th><th>Returned</th><th>Rejected</th></tr>
+            </thead>
+            <tbody>
+            {% for row in summary %}
+            <tr>
+                <td>{{ row.parent_dept }}</td>
+                <td><strong>{{ row.total }}</strong></td>
+                <td>{{ row.pending }}</td>
+                <td>{{ row.verified }}</td>
+                <td>{{ row.returned }}</td>
+                <td>{{ row.rejected }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box">
+        <div class="section-title">
+            <h3>Course-wise Student Count (All Departments)</h3>
+            <span class="accent">Quick view</span>
+        </div>
+        <p class="muted">For a focused, department-only view of unique courses with student
+        rosters, use <a href="{{ url_for('admin_question_papers') }}">Question Paper Preparation</a>.</p>
+        <table>
+            <thead>
+                <tr><th>Course Department</th><th>Course Code</th>
+                    <th>Course Title</th><th>No. of Students</th></tr>
+            </thead>
+            <tbody>
+            {% for row in course_summary %}
+            <tr>
+                <td>{{ row.course_dept }}</td>
+                <td><strong>{{ row.course_code }}</strong></td>
+                <td>{{ row.course_title }}</td>
+                <td>{{ row.student_count }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- ADMIN — QUESTION PAPER PREPARATION (NEW FEATURE) ----------------
+QP_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Question Paper Preparation &mdash; Admin</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """
+.qp-header {
+    background: linear-gradient(135deg, var(--accent), #4d1620);
+    color: #fff; padding: 22px 26px; border-radius: 6px;
+    margin-bottom: 18px; border-left: 4px solid var(--gold);
+}
+.qp-header h2 {
+    color: #fff; margin: 0;
+    font-family: var(--display);
+    font-weight: 600; font-size: 26px;
+}
+.qp-header p {
+    margin: 6px 0 0 0; color: var(--gold-light);
+    font-family: var(--serif); font-size: 16px; line-height: 1.55;
+}
+.qp-count {
+    display: inline-block; background: var(--gold); color: var(--navy-dark);
+    padding: 2px 12px; border-radius: 12px; font-weight: 700;
+    font-family: var(--display); font-size: 16px;
+    letter-spacing: 0.005em;
+}
+details { margin-top: 6px; }
+details summary {
+    cursor: pointer; color: var(--accent); font-weight: 600;
+    font-family: var(--sans); font-size: 13px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+}
+details summary:hover { color: var(--accent-hover); }
+</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['admin']['username'] }} (Admin)",
+                       logout_url="{{ url_for('admin_logout') }}") + """
+<div class="sub-nav">
+    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+    <a href="{{ url_for('parent_dashboard') }}">Verification</a>
+    <a href="{{ url_for('course_dashboard') }}">All Courses</a>
+    <a class="active" href="{{ url_for('admin_question_papers') }}">Question Paper Prep</a>
+    <a href="{{ url_for('home') }}">Public Site</a>
+</div>
+
+<div class="container">
+    <div class="qp-header">
+        <h2>Question Paper Preparation</h2>
+        <p>Select a department to view the unique courses for which students have applied,
+           so that supplementary question papers can be readied.</p>
+    </div>
+
+    <div class="box">
+        <form method="get" action="{{ url_for('admin_question_papers') }}">
+            <div class="row-2">
+                <div>
+                    <label>Course-Offering Department</label>
+                    <select name="dept" onchange="this.form.submit()">
+                        <option value="">-- Select Department --</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept }}" {% if selected_dept == dept %}selected{% endif %}>
+                            {{ dept }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Restrict to Verified Applications</label>
+                    <select name="only_verified" onchange="this.form.submit()">
+                        <option value="">No (show all)</option>
+                        <option value="1" {% if only_verified == '1' %}selected{% endif %}>
+                            Yes (only Verified)
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        {% if selected_dept %}
+        <div class="stats" style="margin-top: 24px;">
+            <div class="stat gold">
+                <div class="label">Selected Department</div>
+                <div class="value" style="font-size:18px;">{{ selected_dept }}</div>
+            </div>
+            <div class="stat">
+                <div class="label">Unique Courses</div>
+                <div class="value">{{ unique_courses|length }}</div>
+            </div>
+            <div class="stat green">
+                <div class="label">Total Student Entries</div>
+                <div class="value">{{ total_entries }}</div>
+            </div>
+        </div>
+
+        <div class="section-title" style="margin-top: 28px;">
+            <h3>Unique Courses to Prepare</h3>
+            <span class="accent">{{ selected_dept }}</span>
+        </div>
+
+        {% if unique_courses %}
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:14%;">Course Code</th>
+                    <th style="width:36%;">Course Title</th>
+                    <th style="width:14%;">No. of Students</th>
+                    <th>Students Applied</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for c in unique_courses %}
+            <tr>
+                <td><strong>{{ c.course_code }}</strong></td>
+                <td>{{ c.course_title }}</td>
+                <td><span class="qp-count">{{ c.student_count }}</span></td>
+                <td>
+                    <details>
+                        <summary>Show {{ c.student_count }} student{{ '' if c.student_count == 1 else 's' }}</summary>
+                        <ul style="margin:8px 0 0 0; padding-left: 18px;">
+                            {% for s in c.students %}
+                            <li>
+                                <strong>{{ s.roll_no }}</strong> &mdash; {{ s.student_name }}
+                                <span class="pill pill-{{ s.parent_verification_status.lower() }}"
+                                      style="margin-left:6px;">
+                                    {{ s.parent_verification_status }}
+                                </span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-warning">
+            No applications found for <strong>{{ selected_dept }}</strong>
+            {% if only_verified == '1' %}with verified status{% endif %}.
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="note" style="margin-top: 22px;">
+            <strong>Tip:</strong> e.g. selecting <em>Physics &amp; Photonics Science</em>
+            will list every distinct course offered by Physics that any student has filled
+            in their supplementary form, along with how many students need that paper.
+        </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- PARENT (VERIFICATION) DASHBOARD ----------------
+PARENT_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Parent Department Verification &mdash; Admin</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['admin']['username'] }} (Admin)",
+                       logout_url="{{ url_for('admin_logout') }}") + """
+<div class="sub-nav">
+    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+    <a class="active" href="{{ url_for('parent_dashboard') }}">Verification</a>
+    <a href="{{ url_for('course_dashboard') }}">All Courses</a>
+    <a href="{{ url_for('admin_question_papers') }}">Question Paper Prep</a>
+    <a href="{{ url_for('home') }}">Public Site</a>
+</div>
+
+<div class="container">
+    <div class="box">
+        <div class="section-title">
+            <h2>Parent Department Verification</h2>
+            <span class="accent">Approve / Return / Reject</span>
+        </div>
+
+        <form method="get" action="{{ url_for('parent_dashboard') }}">
+            <label>Filter by Parent Department</label>
+            <select name="dept" onchange="this.form.submit()">
+                <option value="">-- All Parent Departments --</option>
+                {% for dept in departments %}
+                <option value="{{ dept }}" {% if selected_dept == dept %}selected{% endif %}>{{ dept }}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <div class="stats">
+            <div class="stat"><div class="label">Total</div><div class="value">{{ total }}</div></div>
+            <div class="stat warn"><div class="label">Pending</div><div class="value">{{ pending }}</div></div>
+            <div class="stat green"><div class="label">Verified</div><div class="value">{{ verified }}</div></div>
+            <div class="stat gold"><div class="label">Returned</div><div class="value">{{ returned }}</div></div>
+            <div class="stat maroon"><div class="label">Rejected</div><div class="value">{{ rejected }}</div></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>App ID</th><th>Student</th><th>Roll No</th><th>Parent Dept</th>
+                    <th>Courses</th><th>Fee</th><th>Receipt</th>
+                    <th>Status</th><th>Submitted</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>#{{ "%05d" % app.id }}</td>
+                <td>{{ app.student_name }}</td>
+                <td>{{ app.roll_no }}</td>
+                <td>{{ app.parent_dept }}</td>
+                <td>
+                    <ul style="margin:0; padding-left: 18px;">
+                    {% for c in app.courses %}
+                    <li><strong>{{ c.course_code }}</strong> &mdash; {{ c.course_title }}
+                        <span class="muted">({{ c.course_dept }})</span></li>
+                    {% endfor %}
+                    </ul>
+                </td>
+                <td>&#8377; {{ app.fee }}<br><span class="muted">{{ app.payment_reference or '—' }}</span></td>
+                <td>
+                    {% if app.receipt_filename %}
+                    <a href="{{ url_for('uploaded_file', filename=app.receipt_filename) }}" target="_blank">View</a>
+                    {% else %}<span class="muted">Not uploaded</span>{% endif %}
+                </td>
+                <td>
+                    <span class="pill pill-{{ app.parent_verification_status.lower() }}">
+                        {{ app.parent_verification_status }}
+                    </span>
+                    {% if app.parent_verification_remarks %}
+                    <div class="muted" style="margin-top:4px; font-size:12px;">
+                        {{ app.parent_verification_remarks }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td><span class="muted">{{ app.created_at }}</span></td>
+                <td>
+                    <a class="btn btn-sm" href="{{ url_for('parent_action', app_id=app.id, status='Verified') }}">Verify</a>
+                    <a class="btn btn-sm btn-ghost" href="{{ url_for('parent_action', app_id=app.id, status='Returned') }}">Return</a>
+                    <a class="btn btn-sm btn-maroon" href="{{ url_for('parent_action', app_id=app.id, status='Rejected') }}">Reject</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ---------------- COURSE DASHBOARD (line-item view) ----------------
+COURSE_HTML = """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All Course Entries &mdash; Admin</title>
+""" + GOOGLE_FONTS + """
+<style>""" + BASE_CSS + """</style>
+</head>
+<body>
+""" + institute_header(role_label="{{ session['admin']['username'] }} (Admin)",
+                       logout_url="{{ url_for('admin_logout') }}") + """
+<div class="sub-nav">
+    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+    <a href="{{ url_for('parent_dashboard') }}">Verification</a>
+    <a class="active" href="{{ url_for('course_dashboard') }}">All Courses</a>
+    <a href="{{ url_for('admin_question_papers') }}">Question Paper Prep</a>
+    <a href="{{ url_for('home') }}">Public Site</a>
+</div>
+
+<div class="container">
+    <div class="box">
+        <div class="section-title">
+            <h2>All Course Entries</h2>
+            <span class="accent">Line-item view</span>
+        </div>
+
+        <form method="get" action="{{ url_for('course_dashboard') }}" class="row-3">
+            <div>
+                <label>Course Department</label>
+                <select name="dept" onchange="this.form.submit()">
+                    <option value="">-- All --</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if selected_dept == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Course Code</label>
+                <input type="text" name="course_code" value="{{ selected_course_code }}" placeholder="e.g. MA101">
+            </div>
+            <div>
+                <label>Only Verified</label>
+                <select name="only_verified" onchange="this.form.submit()">
+                    <option value="">No</option>
+                    <option value="1" {% if only_verified == '1' %}selected{% endif %}>Yes</option>
+                </select>
+            </div>
+        </form>
+        <button type="submit" form="filter-form" style="margin-top: 12px;">Apply</button>
+
+        <div class="stats">
+            <div class="stat"><div class="label">Total Entries</div><div class="value">{{ total_rows }}</div></div>
+            <div class="stat gold"><div class="label">Distinct Courses</div><div class="value">{{ distinct_courses }}</div></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>App</th><th>Student</th><th>Roll No</th><th>Parent Dept</th>
+                    <th>Code</th><th>Title</th><th>Course Dept</th>
+                    <th>Status</th><th>Receipt</th><th>Submitted</th></tr>
+            </thead>
+            <tbody>
+            {% for r in rows %}
+            <tr>
+                <td>#{{ "%05d" % r.application_id }}</td>
+                <td>{{ r.student_name }}</td>
+                <td>{{ r.roll_no }}</td>
+                <td>{{ r.parent_dept }}</td>
+                <td><strong>{{ r.course_code }}</strong></td>
+                <td>{{ r.course_title }}</td>
+                <td>{{ r.course_dept }}</td>
+                <td><span class="pill pill-{{ r.parent_verification_status.lower() }}">{{ r.parent_verification_status }}</span></td>
+                <td>{% if r.receipt_filename %}<a href="{{ url_for('uploaded_file', filename=r.receipt_filename) }}" target="_blank">View</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+                <td><span class="muted">{{ r.created_at }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+"""
+
+
+# ===========================================================================
+# ROUTES
+# ===========================================================================
+
+@app.route("/")
+def home():
+    return render_template_string(
+        HOME_HTML,
+        important_dates=IMPORTANT_DATES,
+        date_sheet=DATE_SHEET,
+    )
+
+
+# ---------------- Student auth ----------------
+@app.route("/student/login", methods=["GET", "POST"])
+def student_login():
+    if request.method == "POST":
+        name = request.form.get("student_name", "").strip()
+        roll = request.form.get("roll_no", "").strip()
+        if not name or not roll:
+            flash("Both name and roll number are required.", "error")
+            return redirect(url_for("student_login"))
+        session["student"] = {"name": name, "roll_no": roll}
+        return redirect(url_for("student_form"))
+    return render_template_string(STUDENT_LOGIN_HTML)
+
+
+@app.route("/student/logout")
+def student_logout():
+    session.pop("student", None)
+    return redirect(url_for("home"))
+
+
+@app.route("/student/form")
+@student_required
+def student_form():
+    return render_template_string(STUDENT_FORM_HTML, departments=DEPARTMENTS)
+
+
+@app.route("/submit", methods=["POST"])
+@student_required
+def submit():
+    student_name = request.form["student_name"].strip()
+    roll_no      = request.form["roll_no"].strip()
+    parent_dept  = request.form["parent_dept"].strip()
+    payment_ref  = request.form.get("payment_reference", "").strip()
+
+    course_codes  = request.form.getlist("course_code[]")
+    course_titles = request.form.getlist("course_title[]")
+    course_depts  = request.form.getlist("course_dept[]")
+
+    courses = []
+    for code, title, dept in zip(course_codes, course_titles, course_depts):
+        code, title, dept = code.strip(), title.strip(), dept.strip()
+        if code and title and dept:
+            courses.append((code, title, dept))
+
+    if not courses:
+        return "At least one failed course must be provided.", 400
+    if len(courses) > 10:
+        return "Maximum 10 courses allowed.", 400
+
+    fee = 500 * len(courses)
+    receipt = request.files.get("receipt")
+    saved_filename = None
+    original_filename = None
+
+    if receipt and receipt.filename:
+        if not allowed_file(receipt.filename):
+            return "Invalid file type. Allowed: PDF, PNG, JPG, JPEG.", 400
+        original_filename = receipt.filename
+        safe_name = secure_filename(receipt.filename)
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        saved_filename = f"{roll_no}_{timestamp}_{safe_name}"
+        receipt.save(os.path.join(app.config["UPLOAD_FOLDER"], saved_filename))
+
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO applications (
+            student_name, roll_no, parent_dept, fee, payment_reference,
+            receipt_filename, receipt_original_name, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        student_name, roll_no, parent_dept, fee, payment_ref,
+        saved_filename, original_filename,
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    ))
+    application_id = cur.lastrowid
+
+    for code, title, dept in courses:
+        cur.execute("""
+            INSERT INTO application_courses
+                (application_id, course_code, course_title, course_dept)
+            VALUES (?, ?, ?, ?)
+        """, (application_id, code, title, dept))
+
+    conn.commit()
+    conn.close()
+
+    return render_template_string(
+        SUCCESS_HTML,
+        app_id=application_id, fee=fee, course_count=len(courses),
+    )
+
+
+@app.route("/student/applications")
+@student_required
+def student_my_applications():
+    roll = session["student"]["roll_no"]
+    conn = get_conn()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM applications WHERE roll_no = ? ORDER BY id DESC", (roll,))
+    apps = cur.fetchall()
+    applications = []
+    for row in apps:
+        cur.execute("""
+            SELECT course_code, course_title, course_dept
+            FROM application_courses WHERE application_id = ?
+            ORDER BY course_code
+        """, (row["id"],))
+        courses = cur.fetchall()
+        applications.append({
+            "id": row["id"],
+            "created_at": row["created_at"],
+            "parent_dept": row["parent_dept"],
+            "fee": row["fee"],
+            "parent_verification_status": row["parent_verification_status"],
+            "parent_verification_remarks": row["parent_verification_remarks"],
+            "courses": courses,
+        })
+    conn.close()
+    return render_template_string(MY_APPS_HTML, applications=applications)
+
+
+# ---------------- Admin auth ----------------
+@app.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    if request.method == "POST":
+        u = request.form.get("username", "").strip()
+        p = request.form.get("password", "")
+        if ADMIN_USERS.get(u) == p:
+            session["admin"] = {"username": u}
+            return redirect(url_for("admin_dashboard"))
+        flash("Invalid administrator credentials.", "error")
+        return redirect(url_for("admin_login"))
+    return render_template_string(ADMIN_LOGIN_HTML)
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop("admin", None)
+    return redirect(url_for("home"))
+
+
+# ---------------- Admin dashboards ----------------
+@app.route("/admin")
+@admin_required
+def admin_dashboard():
+    conn = get_conn(); cur = conn.cursor()
+
+    cur.execute("SELECT COUNT(*) AS cnt FROM applications")
+    total = cur.fetchone()["cnt"]
+
+    def count_status(s):
+        cur.execute("SELECT COUNT(*) AS cnt FROM applications WHERE parent_verification_status=?", (s,))
+        return cur.fetchone()["cnt"]
+    pending  = count_status("Pending")
+    verified = count_status("Verified")
+    returned = count_status("Returned")
+    rejected = count_status("Rejected")
+
+    cur.execute("SELECT COUNT(*) AS cnt FROM application_courses")
+    total_course_rows = cur.fetchone()["cnt"]
+
+    cur.execute("""
+        SELECT
+            parent_dept,
+            COUNT(*) AS total,
+            SUM(CASE WHEN parent_verification_status='Pending' THEN 1 ELSE 0 END) AS pending,
+            SUM(CASE WHEN parent_verification_status='Verified' THEN 1 ELSE 0 END) AS verified,
+            SUM(CASE WHEN parent_verification_status='Returned' THEN 1 ELSE 0 END) AS returned,
+            SUM(CASE WHEN parent_verification_status='Rejected' THEN 1 ELSE 0 END) AS rejected
+        FROM applications
+        GROUP BY parent_dept ORDER BY parent_dept
+    """)
+    summary = cur.fetchall()
+
+    cur.execute("""
+        SELECT course_dept, course_code, course_title,
+               COUNT(*) AS student_count
+        FROM application_courses
+        GROUP BY course_dept, course_code, course_title
+        ORDER BY course_dept, course_code
+    """)
+    course_summary = cur.fetchall()
+    conn.close()
+
+    return render_template_string(
+        ADMIN_HTML,
+        total=total, pending=pending, verified=verified,
+        returned=returned, rejected=rejected,
+        total_course_rows=total_course_rows,
+        summary=summary, course_summary=course_summary,
+    )
+
+
+# ---------------- NEW: Question paper preparation by department ----------------
+@app.route("/admin/question-papers")
+@admin_required
+def admin_question_papers():
+    """
+    For a given course-offering department, list every UNIQUE course
+    that students have filled, along with the number of students per course
+    and the roster (so the dept knows which question papers to ready).
+    """
+    selected_dept = request.args.get("dept", "").strip()
+    only_verified = request.args.get("only_verified", "").strip()
+
+    unique_courses = []
+    total_entries = 0
+
+    if selected_dept:
+        conn = get_conn(); cur = conn.cursor()
+
+        # Aggregate: distinct (code, title) within this dept + count
+        agg_query = """
+            SELECT ac.course_code, ac.course_title, COUNT(*) AS student_count
+            FROM application_courses ac
+            JOIN applications a ON a.id = ac.application_id
+            WHERE ac.course_dept = ?
+        """
+        params = [selected_dept]
+        if only_verified == "1":
+            agg_query += " AND a.parent_verification_status = 'Verified'"
+        agg_query += """
+            GROUP BY ac.course_code, ac.course_title
+            ORDER BY ac.course_code
+        """
+        cur.execute(agg_query, params)
+        agg_rows = cur.fetchall()
+
+        for r in agg_rows:
+            # Student roster for this course
+            roster_q = """
+                SELECT a.student_name, a.roll_no, a.parent_verification_status
+                FROM application_courses ac
+                JOIN applications a ON a.id = ac.application_id
+                WHERE ac.course_dept = ?
+                  AND ac.course_code = ?
+                  AND ac.course_title = ?
+            """
+            roster_params = [selected_dept, r["course_code"], r["course_title"]]
+            if only_verified == "1":
+                roster_q += " AND a.parent_verification_status = 'Verified'"
+            roster_q += " ORDER BY a.roll_no"
+            cur.execute(roster_q, roster_params)
+            students = cur.fetchall()
+
+            unique_courses.append({
+                "course_code":  r["course_code"],
+                "course_title": r["course_title"],
+                "student_count": r["student_count"],
+                "students": students,
+            })
+            total_entries += r["student_count"]
+
+        conn.close()
+
+    return render_template_string(
+        QP_HTML,
+        departments=DEPARTMENTS,
+        selected_dept=selected_dept,
+        only_verified=only_verified,
+        unique_courses=unique_courses,
+        total_entries=total_entries,
+    )
+
+
+# ---------------- Verification (parent) dashboard ----------------
+@app.route("/admin/verification")
+@admin_required
+def parent_dashboard():
+    selected_dept = request.args.get("dept", "").strip()
+    conn = get_conn(); cur = conn.cursor()
+
+    base_query = "SELECT * FROM applications"
+    params = []
+    if selected_dept:
+        base_query += " WHERE parent_dept = ?"
+        params.append(selected_dept)
+    base_query += " ORDER BY id DESC"
+    cur.execute(base_query, params)
+    apps = cur.fetchall()
+
+    applications = []
+    for app_row in apps:
+        cur.execute("""
+            SELECT course_code, course_title, course_dept
+            FROM application_courses
+            WHERE application_id = ? ORDER BY course_code
+        """, (app_row["id"],))
+        courses = cur.fetchall()
+        applications.append({
+            "id": app_row["id"],
+            "student_name": app_row["student_name"],
+            "roll_no": app_row["roll_no"],
+            "parent_dept": app_row["parent_dept"],
+            "fee": app_row["fee"],
+            "payment_reference": app_row["payment_reference"],
+            "receipt_filename": app_row["receipt_filename"],
+            "parent_verification_status": app_row["parent_verification_status"],
+            "parent_verification_remarks": app_row["parent_verification_remarks"],
+            "created_at": app_row["created_at"],
+            "courses": courses,
+        })
+
+    count_query = "SELECT parent_verification_status, COUNT(*) AS cnt FROM applications"
+    count_params = []
+    if selected_dept:
+        count_query += " WHERE parent_dept = ?"
+        count_params.append(selected_dept)
+    count_query += " GROUP BY parent_verification_status"
+    cur.execute(count_query, count_params)
+    counts = {r["parent_verification_status"]: r["cnt"] for r in cur.fetchall()}
+
+    total    = sum(counts.values())
+    pending  = counts.get("Pending",  0)
+    verified = counts.get("Verified", 0)
+    returned = counts.get("Returned", 0)
+    rejected = counts.get("Rejected", 0)
+    conn.close()
+
+    return render_template_string(
+        PARENT_HTML,
+        applications=applications,
+        total=total, pending=pending, verified=verified,
+        returned=returned, rejected=rejected,
+        departments=DEPARTMENTS,
+        selected_dept=selected_dept,
+    )
+
+
+@app.route("/admin/verification/<int:app_id>/<status>")
+@admin_required
+def parent_action(app_id, status):
+    if status not in {"Verified", "Returned", "Rejected"}:
+        return "Invalid status", 400
+    conn = get_conn(); cur = conn.cursor()
+    cur.execute("""
+        UPDATE applications
+        SET parent_verification_status = ?,
+            parent_verification_remarks = ?,
+            parent_verified_by = ?,
+            parent_verified_at = ?
+        WHERE id = ?
+    """, (
+        status,
+        f"Marked as {status} by {session['admin']['username']}",
+        session["admin"]["username"],
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        app_id,
+    ))
+    conn.commit(); conn.close()
+    return redirect(url_for("parent_dashboard"))
+
+
+# ---------------- Course dashboard ----------------
+@app.route("/admin/courses")
+@admin_required
+def course_dashboard():
+    selected_dept = request.args.get("dept", "").strip()
+    selected_course_code = request.args.get("course_code", "").strip()
+    only_verified = request.args.get("only_verified", "").strip()
+
+    conn = get_conn(); cur = conn.cursor()
+    query = """
+        SELECT
+            ac.id, ac.application_id, ac.course_code, ac.course_title, ac.course_dept,
+            a.student_name, a.roll_no, a.parent_dept, a.fee, a.receipt_filename,
+            a.parent_verification_status, a.created_at
+        FROM application_courses ac
+        JOIN applications a ON ac.application_id = a.id
+        WHERE 1=1
+    """
+    params = []
+    if selected_dept:
+        query += " AND ac.course_dept = ?"; params.append(selected_dept)
+    if selected_course_code:
+        query += " AND UPPER(ac.course_code) LIKE ?"; params.append(f"%{selected_course_code.upper()}%")
+    if only_verified == "1":
+        query += " AND a.parent_verification_status = 'Verified'"
+    query += " ORDER BY ac.course_code, a.student_name"
+
+    cur.execute(query, params)
+    rows = cur.fetchall()
+
+    distinct_courses = len(set((r["course_code"], r["course_title"]) for r in rows))
+    total_rows = len(rows)
+    conn.close()
+
+    return render_template_string(
+        COURSE_HTML,
+        rows=rows,
+        total_rows=total_rows,
+        distinct_courses=distinct_courses,
+        departments=DEPARTMENTS,
+        selected_dept=selected_dept,
+        selected_course_code=selected_course_code,
+        only_verified=only_verified,
+    )
+
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -16,7 +16,6 @@
   <meta property="og:type" content="profile" />
   <meta property="og:title" content="Dr. Om Prakash Yadav — Assistant Professor, NIT Hamirpur" />
   <meta property="og:description" content="Academic profile: research in FEM, numerical analysis of PDEs, reaction–diffusion models and PINNs. Teaching, publications, projects and administration at NIT Hamirpur." />
-  <meta property="og:image" content="profil.jpeg" />
   <meta property="profile:first_name" content="Om Prakash" />
   <meta property="profile:last_name" content="Yadav" />
 
@@ -24,10 +23,6 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Dr. Om Prakash Yadav — NIT Hamirpur" />
   <meta name="twitter:description" content="Assistant Professor, Department of Mathematics & Scientific Computing, NIT Hamirpur." />
-  <meta name="twitter:image" content="profil.jpeg" />
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/jpeg" href="profil.jpeg" />
 
   <!-- Google Fonts: Vollkorn (Bookman/Fournier-kindish book serif) + Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +39,6 @@
     "familyName": "Yadav",
     "honorificPrefix": "Dr.",
     "jobTitle": "Assistant Professor",
-    "image": "profil.jpeg",
     "email": "mailto:opyadav@nith.ac.in",
     "telephone": "+91-1972-254108",
     "worksFor": {
@@ -312,30 +306,14 @@
     .quicklinks-card li{ font-size:15px; }
 
     .small{font-size:14px; color:var(--muted)}
-
     /* ============================================================
-       HERO LAYOUT (with photo)
+       HERO LAYOUT
        ============================================================ */
     .hero-flex{
       display:flex;
       align-items:flex-start;
-      gap:clamp(24px, 7vw, 100px);
     }
     .hero-text{ max-width:780px; flex:1; }
-    .hero-photo{
-      width:140px;
-      height:170px;
-      object-fit:cover;
-      border-radius:4px;
-      border:1px solid rgba(255,255,255,0.7);
-      margin-top:6px;
-      box-shadow:
-        0 4px 18px rgba(13,44,92,0.18),
-        0 0 0 6px rgba(255,255,255,0.55),
-        0 0 0 7px var(--gold);
-      filter:saturate(0.97);
-      backdrop-filter: blur(2px);
-    }
 
     /* ============================================================
        COLLAPSIBLE SECTIONS — § marker + + / − toggle
@@ -452,14 +430,7 @@
        RESPONSIVE
        ============================================================ */
     @media (max-width: 768px){
-      .hero-flex{ flex-direction:column-reverse; gap:16px; align-items:flex-start; }
-      .hero-photo{ width:120px; height:150px; }
-      h2{ font-size:22px; }
-      li, ol li{ font-size:15px; }
-      .overview-card p{ font-size:16px; }
-      .brand-mark{ font-size:15px; }
-      nav a:not(.brand-mark){ padding:6px 10px; font-size:12.5px; }
-    }
+      .hero-flex{ flex-direction:column; gap:16px; align-items:flex-start; }
     @media (min-width: 800px){
       .grid{grid-template-columns: 1.4fr 1fr}
     }
@@ -487,8 +458,6 @@
     <p class="subtitle dept">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a> &nbsp;·&nbsp; Tel: +91-1972-254108</p>
   </div>
-
-  <img class="hero-photo" src="profile.jpeg" alt="Portrait of Dr. Om Prakash Yadav, Assistant Professor at NIT Hamirpur" width="140" height="170" />
 </section>
 
 <main class="wrap">

@@ -185,14 +185,6 @@
       scroll-margin-top:80px;
       position:relative;
     }
-    .hero::after{
-      content:"";
-      display:block;
-      width:80px;
-      height:1px;
-      background: var(--gold);
-      margin-top:24px;
-    }
     .name{
       font-family: var(--display);
       font-weight:600;
@@ -235,6 +227,55 @@
     main{padding:8px 0 50px}
 
     /* ============================================================
+       PROFILE STATISTICS STRIP
+       ============================================================ */
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin:26px 0 6px;
+    }
+    .stat{
+      flex:1 1 130px;
+      background: var(--glass);
+      border:1px solid var(--glass-border);
+      border-radius:8px;
+      padding:18px 14px;
+      text-align:center;
+      position:relative;
+      box-shadow:
+        0 8px 32px rgba(13,44,92,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+      backdrop-filter: blur(14px) saturate(140%);
+      -webkit-backdrop-filter: blur(14px) saturate(140%);
+      transition:border-color .25s ease, transform .25s ease, background .25s ease;
+    }
+    .stat:hover{
+      border-color:var(--gold);
+      background: var(--glass-strong);
+      transform:translateY(-2px);
+    }
+    .stat .num{
+      font-family: var(--sans);
+      font-size:36px;
+      font-weight:700;
+      color:var(--navy);
+      line-height:1;
+      letter-spacing:-0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat .num span{ font-size:20px; color:var(--gold-deep); }
+    .stat .label{
+      font-family: var(--sans);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+      color:var(--muted);
+      margin-top:10px;
+      line-height:1.4;
+    }
+
+    /* ============================================================
        SECTION HEADINGS
        ============================================================ */
     h2{
@@ -252,9 +293,8 @@
     ol li{ font-family: var(--sans); font-size:15.5px; line-height:1.7; padding-left:4px; }
 
     /* ============================================================
-       OVERVIEW + QUICK LINKS GRID
+       QUICK LINKS CARD (now at bottom, horizontal)
        ============================================================ */
-    .grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:8px}
     .card{
       background: var(--glass);
       border:1px solid var(--glass-border);
@@ -281,31 +321,31 @@
     .card:hover{
       border-color: var(--gold);
       background: var(--glass-strong);
-      box-shadow:
-        0 6px 28px rgba(13,44,92,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.6);
-      transform:translateY(-1px);
     }
-    .overview-card h2{ margin-bottom:10px; }
-    .overview-card p{
-      font-family: var(--serif);
-      font-size:17px;
-      line-height:1.75;
-      color:var(--text);
+    .quicklinks-card{ margin-top:26px; scroll-margin-top:80px; }
+    .quicklinks-card .ql-list{
+      list-style:none;
+      margin:12px 0 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 18px;
+    }
+    .quicklinks-card .ql-list li{
+      font-size:15px;
       margin:0;
-      text-align:justify;
-      hyphens:auto;
+      position:relative;
+      padding-left:16px;
     }
-    .overview-card p::first-letter{
-      font-family: var(--display);
-      font-size: 1.2em;
+    .quicklinks-card .ql-list li::before{
+      content:"›";
+      position:absolute;
+      left:0;
+      color:var(--gold-deep);
       font-weight:700;
-      color: var(--navy);
     }
-    .quicklinks-card ul{ margin-left:18px; }
-    .quicklinks-card li{ font-size:15px; }
 
     .small{font-size:14px; color:var(--muted)}
+
     /* ============================================================
        HERO LAYOUT
        ============================================================ */
@@ -314,6 +354,19 @@
       align-items:flex-start;
     }
     .hero-text{ max-width:780px; flex:1; }
+    .hero-photo{
+      width:172px;
+      height:200px;
+      object-fit:cover;
+      object-position:center top;
+      border-radius:10px;
+      margin-left:28px;
+      flex-shrink:0;
+      border:1px solid var(--glass-border);
+      box-shadow:
+        0 10px 32px rgba(13,44,92,0.16),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    }
 
     /* ============================================================
        COLLAPSIBLE SECTIONS — § marker + + / − toggle
@@ -431,8 +484,8 @@
        ============================================================ */
     @media (max-width: 768px){
       .hero-flex{ flex-direction:column; gap:16px; align-items:flex-start; }
-    @media (min-width: 800px){
-      .grid{grid-template-columns: 1.4fr 1fr}
+      .hero-photo{ margin-left:0; }
+      .stat{ flex:1 1 40%; }
     }
   </style>
 </head>
@@ -458,28 +511,32 @@
     <p class="subtitle dept">National Institute of Technology Hamirpur (H.P.)</p>
     <p class="meta">Email: <a href="mailto:opyadav@nith.ac.in">opyadav@nith.ac.in</a> &nbsp;·&nbsp; Tel: +91-1972-254108</p>
   </div>
+  <img src="profile.jpeg" alt="Dr. Om Prakash Yadav" class="hero-photo" />
 </section>
 
 <main class="wrap">
 
-  <div class="grid">
-    <div class="card overview-card">
-      <h2>Overview</h2>
-      <p>
-        We work in applied mathematics, focusing on the numerical analysis of partial differential equations, with particular emphasis on finite element and finite difference methods. Our interests include reaction–diffusion models, higher-order numerical schemes, and, more recently, the exploration of physics-informed neural networks (PINNs) for scientific computing applications.
-      </p>
+  <!-- PROFILE STATISTICS -->
+  <div class="stats" aria-label="Profile statistics">
+    <div class="stat">
+      <div class="num">21</div>
+      <div class="label">Publications</div>
     </div>
-
-    <div class="card overview-card quicklinks-card">
-      <h2>Quick Links</h2>
-      <ul>
-        <li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></li>
-        <li><a href="https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav" target="_blank" rel="noopener">NITH Faculty Profile</a></li>
-        <li><a href="https://nith.ac.in/td/index.html" target="_blank" rel="noopener">NITH Directory</a></li>
-        <li><a href="https://nith.ac.in/bachelor-course-structure-syllabus" target="_blank" rel="noopener">NITH BTech Courses</a></li>
-        <li><a href="https://nith.ac.in/uploads/topics/updated-math-syllabus-msc-nep202017222488503953.pdf" target="_blank" rel="noopener">NITH MSc Courses</a></li>
-        <li><a href="https://nith.ac.in/downloads-for-faculty-staff" target="_blank" rel="noopener">NITH Faculty Downloads</a></li>
-      </ul>
+    <div class="stat">
+      <div class="num">1</div>
+      <div class="label">Projects</div>
+    </div>
+    <div class="stat">
+      <div class="num">0</div>
+      <div class="label">Patents</div>
+    </div>
+    <div class="stat">
+      <div class="num">2</div>
+      <div class="label">PhD Guided</div>
+    </div>
+    <div class="stat">
+      <div class="num">2</div>
+      <div class="label">PhD Ongoing</div>
     </div>
   </div>
 
@@ -645,6 +702,19 @@
       <li>OIC Registration, Lab and Classrooms, Library, DoMSC, NIT Hamirpur</li>
     </ul>
   </details>
+
+  <!-- QUICK LINKS (moved to bottom) -->
+  <div class="card quicklinks-card" id="quicklinks">
+    <h2>Quick Links</h2>
+    <ul class="ql-list">
+      <li><a href="https://scholar.google.com/citations?user=RBRI8oIAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a></li>
+      <li><a href="https://portfolios.nith.ac.in/index.php?/nith/om-prakash-yadav" target="_blank" rel="noopener">NITH Faculty Profile</a></li>
+      <li><a href="https://nith.ac.in/td/index.html" target="_blank" rel="noopener">NITH Directory</a></li>
+      <li><a href="https://nith.ac.in/bachelor-course-structure-syllabus" target="_blank" rel="noopener">NITH BTech Courses</a></li>
+      <li><a href="https://nith.ac.in/uploads/topics/updated-math-syllabus-msc-nep202017222488503953.pdf" target="_blank" rel="noopener">NITH MSc Courses</a></li>
+      <li><a href="https://nith.ac.in/downloads-for-faculty-staff" target="_blank" rel="noopener">NITH Faculty Downloads</a></li>
+    </ul>
+  </div>
 
 </main>
 

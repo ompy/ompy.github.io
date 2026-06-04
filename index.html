@@ -232,15 +232,15 @@
     .stats{
       display:flex;
       flex-wrap:wrap;
-      gap:14px;
+      gap:10px;
       margin:26px 0 6px;
     }
     .stat{
-      flex:1 1 130px;
+      flex:1 1 100px;
       background: var(--glass);
       border:1px solid var(--glass-border);
       border-radius:8px;
-      padding:18px 14px;
+      padding:14px 10px;
       text-align:center;
       position:relative;
       box-shadow:
@@ -257,22 +257,22 @@
     }
     .stat .num{
       font-family: var(--sans);
-      font-size:36px;
+      font-size:30px;
       font-weight:700;
       color:var(--navy);
       line-height:1;
       letter-spacing:-0.02em;
       font-variant-numeric: tabular-nums;
     }
-    .stat .num span{ font-size:20px; color:var(--gold-deep); }
+    .stat .num span{ font-size:18px; color:var(--gold-deep); }
     .stat .label{
       font-family: var(--sans);
-      font-size:12px;
+      font-size:11px;
       text-transform:uppercase;
-      letter-spacing:0.05em;
+      letter-spacing:0.04em;
       color:var(--muted);
-      margin-top:10px;
-      line-height:1.4;
+      margin-top:8px;
+      line-height:1.35;
     }
 
     /* ============================================================
@@ -538,6 +538,10 @@
       <div class="num">2</div>
       <div class="label">PhD Ongoing</div>
     </div>
+    <div class="stat">
+      <div class="num" id="visitorCount">…</div>
+      <div class="label">Visitors</div>
+    </div>
   </div>
 
   <!-- EDUCATION -->
@@ -727,6 +731,21 @@
 <script>
   // Footer year
   document.getElementById("y").textContent = new Date().getFullYear();
+
+  // Live visitor counter (works on static GitHub Pages)
+  (async function () {
+    const el = document.getElementById("visitorCount");
+    if (!el) return;
+    try {
+      const res = await fetch("https://abacus.jasoncameron.dev/hit/opyadav-nith/home");
+      const data = await res.json();
+      el.textContent = (typeof data.value === "number")
+        ? data.value.toLocaleString()
+        : "—";
+    } catch (e) {
+      el.textContent = "—";
+    }
+  })();
 
   // Active nav highlighting on scroll
   const navLinks = document.querySelectorAll("nav a:not(.brand-mark)");
